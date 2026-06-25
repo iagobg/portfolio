@@ -1,6 +1,6 @@
 # Iago Bussoletti Portfolio
 
-Personal portfolio for Iago Bussoletti, built with Next.js App Router, JavaScript, Tailwind CSS, and MDX. The interface is inspired by a developer workspace: projects behave like files, pages appear as editor tabs, project tags power the archive filters, and the command palette provides fast navigation.
+Personal portfolio for Iago Bussoletti, built with Next.js App Router, JavaScript, Tailwind CSS, and MDX. The interface is inspired by the VS Code workspace: projects behave like files, pages appear as editor tabs, project tags power the archive filters, and the command palette provides fast navigation.
 
 ## Run locally
 
