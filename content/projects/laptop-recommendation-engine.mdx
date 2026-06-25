@@ -1,0 +1,71 @@
+---
+slug: "laptop-recommendation-engine"
+fileName: "laptop-recommendation-engine.mdx"
+title: "Interactive laptop recommendation engine"
+shortDescription: "An LLM-assisted recommendation engine grounded in a database of real laptop products."
+year: 2026
+status: "Finishing touches"
+featured: true
+repositoryUrl: ""
+liveUrl: ""
+coverImage: "/projects/laptop-recommendation-engine/cover.png"
+screenshots:
+  - src: "/projects/laptop-recommendation-engine/screenshot-01.png"
+    alt: "Natural-language laptop recommendation query"
+    caption: "Users describe budget, portability, battery, and performance needs in natural language."
+  - src: "/projects/laptop-recommendation-engine/screenshot-02.png"
+    alt: "Structured extraction for laptop requirements"
+    caption: "The system extracts structured constraints before ranking real products."
+  - src: "/projects/laptop-recommendation-engine/screenshot-03.png"
+    alt: "Grounded laptop recommendation results"
+    caption: "Recommendations are selected from the product database rather than invented."
+tags:
+  - "LLM"
+  - "Recommendation engine"
+  - "Product database"
+  - "Natural language"
+  - "Structured extraction"
+  - "Ranking"
+  - "Semantic search"
+  - "Laptops"
+  - "Vertical slice"
+summary:
+  problem: "Shopping requirements are often expressed in messy language, while useful recommendations need grounded product data."
+  solution: "The system separates LLM interpretation from ranking so recommendations stay attached to real laptop records."
+  role: "Product architecture and full-stack development"
+---
+
+## Overview
+
+The laptop recommendation engine is a vertical slice for helping users translate natural-language requirements into grounded laptop suggestions. The current version is intentionally limited to laptops and does not claim support for broader product categories yet.
+
+<Decision title="Grounded recommendations">The LLM interprets intent, but the final recommendation must come from a real product database.</Decision>
+
+## The problem
+
+A user might ask for a laptop for programming, college, gaming, travel, battery life, or a strict budget. Those requests are ambiguous, but the recommendation cannot be ambiguous: it needs to return real products with clear reasons.
+
+## Architecture
+
+The system separates interpretation from ranking. The language model helps extract budget, use case, and preference signals. The ranking layer then applies grounded filters and scoring rules against the laptop database.
+
+| Stage | Responsibility |
+| --- | --- |
+| Intent interpretation | Convert user language into structured constraints |
+| Product retrieval | Select candidate laptops from real records |
+| Ranking | Balance budget, performance, battery life, and portability |
+| Explanation | Describe why each result fits the request |
+
+## Technical decisions
+
+Keeping the LLM away from final product invention is the central design choice. It can explain, classify, and extract, but the product list remains database-backed.
+
+<Callout title="Vertical-slice scope">The current implementation focuses on laptops only. The architecture leaves room for more categories later, but the public behavior should stay honest about the current scope.</Callout>
+
+## Current state
+
+The project is receiving finishing touches. Live and source links will appear automatically after real URLs are added to the frontmatter.
+
+## Lessons learned
+
+Recommendation systems need product discipline as much as model capability. Separating model interpretation from deterministic product ranking makes the application easier to test, easier to explain, and safer for users.

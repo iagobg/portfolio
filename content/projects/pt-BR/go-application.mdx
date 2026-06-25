@@ -1,0 +1,68 @@
+---
+slug: "go-application"
+fileName: "go-application.mdx"
+title: "Aplicação em Go em tempo real"
+shortDescription: "Uma aplicação server-rendered em Go usando Templ, embeddings de LLM e interações ao vivo."
+year: 2026
+status: "Ajustes finais"
+featured: true
+repositoryUrl: ""
+liveUrl: ""
+coverImage: "/projects/go-application/cover.png"
+screenshots:
+  - src: "/projects/go-application/screenshot-01.png"
+    alt: "Fluxo de busca renderizado no servidor"
+    caption: "Uma interface compacta server-rendered para consultar dados estruturados e semânticos."
+  - src: "/projects/go-application/screenshot-02.png"
+    alt: "Lista de resultados apoiada por embeddings"
+    caption: "Resultados combinam filtros backend com similaridade por embeddings."
+  - src: "/projects/go-application/screenshot-03.png"
+    alt: "Painel de interação ao vivo"
+    caption: "Atualizações focadas mantêm a página responsiva sem transformá-la em uma SPA pesada."
+tags:
+  - "Go"
+  - "Templ"
+  - "HTMX"
+  - "LLM"
+  - "Embeddings"
+  - "Busca semântica"
+  - "UI renderizada no servidor"
+  - "Eventos ao vivo"
+summary:
+  problem: "O projeto explora busca semântica e interações ao vivo sem abrir mão de uma arquitetura pequena renderizada no servidor."
+  solution: "Go conduz o fluxo backend, Templ mantém views explícitas e embeddings adicionam recuperação por similaridade onde busca textual é limitada."
+  role: "Desenvolvimento backend e UI server-rendered"
+---
+
+## Visão geral
+
+Este projeto é uma aplicação em Go focada em padrões de interação renderizados no servidor, busca apoiada por embeddings e atualizações ao vivo pragmáticas. Ele não é apresentado como produto completo até que os detalhes restantes estejam finalizados.
+
+<Limitation title="Detalhes públicos incompletos">Algumas informações específicas do domínio ainda estão sendo organizadas, então este estudo descreve a direção arquitetural sem inventar afirmações de produto.</Limitation>
+
+## Por que Go
+
+Go combina bem com esse estilo de projeto porque a aplicação se beneficia de tratamento claro de requisições, deploy previsível e concorrência direta.
+
+## Modelo de renderização
+
+Templ fornece componentes explícitos enquanto mantém a renderização no servidor. Interações no estilo HTMX podem pedir fragmentos focados da página em vez de enviar uma aplicação client-side completa.
+
+```go
+type SearchResult struct {
+    Title string
+    Score float64
+}
+```
+
+## Embeddings e busca
+
+O trabalho com LLM fica separado do fluxo determinístico do backend. Embeddings ajudam a recuperar itens similares, mas a aplicação ainda precisa de regras claras de ranking, fallbacks previsíveis e observabilidade.
+
+## Estado atual
+
+O deploy está marcado como ajustes finais. Quando as URLs de live e repositório estiverem prontas, adicioná-las à frontmatter irá expor automaticamente as ações no card e na página.
+
+## Próximas melhorias
+
+A próxima iteração útil é documentar o fluxo de dados com mais concretude: ingestão, geração de embeddings, consulta, ranking e a fronteira entre similaridade semântica e filtros determinísticos.

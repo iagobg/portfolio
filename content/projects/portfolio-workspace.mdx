@@ -1,0 +1,71 @@
+---
+slug: "portfolio-workspace"
+fileName: "portfolio-workspace.mdx"
+title: "Portfolio Workspace"
+shortDescription: "A Next.js portfolio presented as an editor-inspired workspace with MDX-driven project entries."
+year: 2026
+status: "Finishing touches"
+featured: true
+repositoryUrl: ""
+liveUrl: ""
+coverImage: "/projects/portfolio-workspace/cover.png"
+screenshots:
+  - src: "/projects/portfolio-workspace/screenshot-01.png"
+    alt: "Portfolio homepage with explorer, tabs, and project cards"
+    caption: "The homepage behaves like README.md inside a persistent portfolio shell."
+  - src: "/projects/portfolio-workspace/screenshot-02.png"
+    alt: "Projects archive with search and tag filters"
+    caption: "Projects and tags are generated from MDX frontmatter."
+  - src: "/projects/portfolio-workspace/screenshot-03.png"
+    alt: "Responsive project case study page"
+    caption: "Project pages render semantic MDX content, screenshots, metadata, and navigation."
+tags:
+  - "Next.js"
+  - "App Router"
+  - "MDX"
+  - "Tailwind CSS"
+  - "Localization"
+  - "SEO"
+  - "Responsive UI"
+  - "Content architecture"
+summary:
+  problem: "A portfolio needs to feel distinctive without becoming a fake editor or a hardcoded showcase."
+  solution: "A persistent editor-inspired shell reads MDX project metadata so navigation, filters, and pages update automatically."
+  role: "Design, frontend architecture, and content system"
+---
+
+## Overview
+
+This portfolio is itself a project: a content-driven Next.js site that presents software work through an original editor-inspired interface. The shell borrows useful workspace ideas such as explorer navigation, tabs, breadcrumbs, a command palette, and a status bar, while the pages remain semantic and readable.
+
+<Decision title="Portfolio as content system">Adding a project should mean adding an MDX file and screenshots, not editing navigation arrays or page components.</Decision>
+
+## The problem
+
+The goal was to build a portfolio that looks memorable to developers without hiding the actual case studies. A literal code-editor clone would be confusing, and a static set of cards would become annoying to maintain as projects grow.
+
+## Architecture
+
+Projects live as MDX files with structured frontmatter. The same metadata feeds the explorer, archive, search, filters, command palette, project pages, sitemap, and previous/next navigation.
+
+| Area | Decision |
+| --- | --- |
+| Framework | Next.js App Router |
+| Content | Local MDX files with frontmatter |
+| Styling | Tailwind CSS and a custom editor-inspired palette |
+| Localization | English default routes and `/pt-BR` localized routes |
+| Data source | Filesystem content, no database |
+
+## Technical decisions
+
+The implementation keeps Server Components as the default and uses Client Components only for interactions such as the command palette, mobile explorer drawer, filters, and language toggle. Project search uses lightweight metadata instead of loading every MDX body into the browser.
+
+<Callout title="Extension pattern">This entry is intended to be copied when adding future projects: frontmatter first, then a readable case study, then screenshots.</Callout>
+
+## Current state
+
+The site supports English and Brazilian Portuguese routes, automatic first-visit language selection from browser language preferences, MDX case studies, SEO metadata, and responsive navigation.
+
+## Lessons learned
+
+The editor metaphor works best when it improves navigation rather than becoming decoration. The surrounding shell can feel technical and familiar while the main content remains normal, accessible web content.

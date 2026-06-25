@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  background: #090d13;
+}
+
+body {
+  margin: 0;
+  color: #edf4ff;
+  font-family: theme("fontFamily.sans");
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(59, 142, 234, 0.45);
+  color: #edf4ff;
+}
+
+:focus-visible {
+  outline: 2px solid #69adf7;
+  outline-offset: 2px;
+}
+
+.editor-scrollbar {
+  scrollbar-color: #39465c transparent;
+  scrollbar-width: thin;
+}
+
+.editor-scrollbar::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+.editor-scrollbar::-webkit-scrollbar-thumb {
+  background: #39465c;
+}
+
+.editor-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mdx-content {
+  color: #cbd7e8;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.mdx-content > * + * {
+  margin-top: 1.2rem;
+}
+
+.mdx-content h2,
+.mdx-content h3 {
+  scroll-margin-top: 7rem;
+  color: #edf4ff;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.mdx-content h2 {
+  border-top: 1px solid #293345;
+  font-size: clamp(1.45rem, 2.6vw, 2rem);
+  margin-top: 2.6rem;
+  padding-top: 1.3rem;
+}
+
+.mdx-content h3 {
+  font-size: 1.15rem;
+  margin-top: 2rem;
+}
+
+.mdx-content p {
+  max-width: 74ch;
+}
+
+.mdx-content a {
+  color: #9fcbff;
+  text-decoration: underline;
+  text-decoration-color: rgba(159, 203, 255, 0.35);
+  text-underline-offset: 0.22em;
+}
+
+.mdx-content ul,
+.mdx-content ol {
+  max-width: 74ch;
+  padding-left: 1.25rem;
+}
+
+.mdx-content li + li {
+  margin-top: 0.45rem;
+}
+
+.mdx-content table {
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.mdx-content th,
+.mdx-content td {
+  border: 1px solid #293345;
+  padding: 0.75rem 0.9rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.mdx-content th {
+  background: #151b25;
+  color: #edf4ff;
+  font-family: theme("fontFamily.mono");
+  font-size: 0.82rem;
+}
+
+.mdx-content pre {
+  background: #0d121a;
+  border: 1px solid #293345;
+  border-radius: 8px;
+  color: #edf4ff;
+  overflow-x: auto;
+  padding: 1rem;
+}
+
+.mdx-content code {
+  font-family: theme("fontFamily.mono");
+  font-size: 0.9em;
+}
+
+.mdx-content :not(pre) > code {
+  background: #151b25;
+  border: 1px solid #293345;
+  border-radius: 5px;
+  color: #9fcbff;
+  padding: 0.12rem 0.32rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

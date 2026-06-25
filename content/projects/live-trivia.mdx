@@ -1,0 +1,71 @@
+---
+slug: "live-trivia"
+fileName: "live-trivia.mdx"
+title: "Live Trivia"
+shortDescription: "A synchronized multiplayer trivia application built around real-time interactions."
+year: 2026
+status: "Finishing touches"
+featured: true
+repositoryUrl: ""
+liveUrl: ""
+coverImage: "/projects/live-trivia/cover.png"
+screenshots:
+  - src: "/projects/live-trivia/screenshot-01.png"
+    alt: "Administrator controls for an active trivia round"
+    caption: "The administrator controls questions, hints, timers, and round state."
+  - src: "/projects/live-trivia/screenshot-02.png"
+    alt: "Mobile player interface during a trivia round"
+    caption: "Players submit answers from their own devices while seeing synchronized activity."
+  - src: "/projects/live-trivia/screenshot-03.png"
+    alt: "Live results and score view"
+    caption: "Scores and round updates are propagated to connected participants."
+tags:
+  - "Elixir"
+  - "Phoenix"
+  - "Phoenix LiveView"
+  - "WebSockets"
+  - "Real-time"
+  - "Multi-user"
+  - "High-frequency events"
+  - "Server-side state"
+  - "Responsive UI"
+summary:
+  problem: "Trivia sessions need shared timing, visible participation, and consistent state across many devices."
+  solution: "Phoenix LiveView keeps the server authoritative while pushing lightweight state changes to connected players."
+  role: "Full-stack development"
+---
+
+## Overview
+
+Live Trivia is a multiplayer trivia application where an administrator runs a session and players join from their own devices. The important constraint is coordination: questions, hints, timers, answers, presence, and scores need to move together without every client inventing its own version of the game.
+
+<Decision title="Primary direction">Phoenix LiveView fits the shape of this project because the server can own the game state while connected clients receive focused interface updates.</Decision>
+
+## The problem
+
+Trivia sounds simple until people answer at nearly the same time, reconnect mid-round, or watch a timer drift between devices. The application needs a single source of truth that handles frequent events while keeping the mobile player interface responsive.
+
+## Architecture
+
+The server is treated as the authority for the room. Player events flow to the backend, game state is updated in one place, and LiveView streams the visible changes back to the browser. This keeps the browser focused on interaction and presentation instead of becoming a second game engine.
+
+| Area | Decision |
+| --- | --- |
+| Session control | Administrator-driven room state |
+| Player updates | LiveView events and patches |
+| Shared state | Server-owned data model |
+| Mobile support | Compact controls and responsive layouts |
+
+## Technical decisions
+
+Phoenix and Elixir leave room for process-oriented modeling. A room can be reasoned about as an active system rather than a set of isolated form submissions. That matters for simultaneous answers, presence, and score propagation.
+
+<Callout title="Implementation focus">The strongest part of the project is the real-time coordination model: keeping every participant aligned while avoiding excessive client-side state.</Callout>
+
+## Current state
+
+The project is receiving finishing touches before the deployment and repository links are published. The portfolio intentionally leaves those actions hidden until the frontmatter contains real URLs.
+
+## Lessons learned
+
+The core lesson is that real-time interfaces benefit from ruthless clarity about ownership. Once the server owns the authoritative state, the UI can stay smaller, easier to synchronize, and easier to reason about under load.

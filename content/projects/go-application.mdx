@@ -1,0 +1,68 @@
+---
+slug: "go-application"
+fileName: "go-application.mdx"
+title: "Go real-time application"
+shortDescription: "A server-rendered Go application using Go, Templ, LLM embeddings, and live interactions."
+year: 2026
+status: "Finishing touches"
+featured: true
+repositoryUrl: ""
+liveUrl: ""
+coverImage: "/projects/go-application/cover.png"
+screenshots:
+  - src: "/projects/go-application/screenshot-01.png"
+    alt: "Server-rendered search workflow"
+    caption: "A compact server-rendered interface for querying structured and semantic data."
+  - src: "/projects/go-application/screenshot-02.png"
+    alt: "Embedding-backed result list"
+    caption: "Search results combine backend filtering with embedding similarity."
+  - src: "/projects/go-application/screenshot-03.png"
+    alt: "Live interaction panel"
+    caption: "Focused updates keep the page responsive without turning it into a heavy SPA."
+tags:
+  - "Go"
+  - "Templ"
+  - "HTMX"
+  - "LLM"
+  - "Embeddings"
+  - "Semantic search"
+  - "Server-rendered UI"
+  - "Live events"
+summary:
+  problem: "The project explores semantic search and live interactions without giving up a small server-rendered architecture."
+  solution: "Go handles the backend flow, Templ keeps views explicit, and embeddings add similarity-based retrieval where keyword search is too narrow."
+  role: "Backend and server-rendered UI development"
+---
+
+## Overview
+
+This project is a Go application focused on server-rendered interaction patterns, embedding-backed search, and pragmatic live updates. It is intentionally not presented as a complete product until the remaining details are finalized.
+
+<Limitation title="Incomplete public details">Some domain-specific information is still being cleaned up, so this case study describes the architecture direction without inventing product claims.</Limitation>
+
+## Why Go
+
+Go is a strong fit for this style of project because the application benefits from clear request handling, predictable deployment, and straightforward concurrency. The codebase can stay close to the backend behavior without hiding too much behind framework machinery.
+
+## Rendering model
+
+Templ provides typed, explicit components while keeping rendering on the server. HTMX-style interactions can then request focused page fragments instead of shipping a full client application for every workflow.
+
+```go
+type SearchResult struct {
+    Title string
+    Score float64
+}
+```
+
+## Embeddings and search
+
+The LLM-related work is kept separate from the deterministic backend flow. Embeddings can help retrieve similar items, but the application still needs clear ranking rules, predictable fallbacks, and enough observability to understand why a result appears.
+
+## Current state
+
+The deployment is marked as finishing touches. When the live URL and repository URL are ready, adding them to this MDX frontmatter will automatically expose the actions on the project card and project page.
+
+## Future improvements
+
+The next useful iteration is to make the data flow documentation more concrete: ingestion, embedding generation, query path, ranking, and the boundary between semantic similarity and deterministic filters.

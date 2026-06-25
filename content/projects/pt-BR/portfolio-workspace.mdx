@@ -1,0 +1,71 @@
+---
+slug: "portfolio-workspace"
+fileName: "portfolio-workspace.mdx"
+title: "Portfolio Workspace"
+shortDescription: "Um portfólio em Next.js apresentado como workspace inspirado em editor e movido por projetos em MDX."
+year: 2026
+status: "Ajustes finais"
+featured: true
+repositoryUrl: ""
+liveUrl: ""
+coverImage: "/projects/portfolio-workspace/cover.png"
+screenshots:
+  - src: "/projects/portfolio-workspace/screenshot-01.png"
+    alt: "Homepage do portfólio com explorador, abas e cards"
+    caption: "A homepage se comporta como README.md dentro de um shell persistente."
+  - src: "/projects/portfolio-workspace/screenshot-02.png"
+    alt: "Arquivo de projetos com busca e filtros por tag"
+    caption: "Projetos e tags são gerados a partir da frontmatter dos arquivos MDX."
+  - src: "/projects/portfolio-workspace/screenshot-03.png"
+    alt: "Página responsiva de estudo de caso"
+    caption: "Páginas de projeto renderizam conteúdo MDX semântico, screenshots, metadados e navegação."
+tags:
+  - "Next.js"
+  - "App Router"
+  - "MDX"
+  - "Tailwind CSS"
+  - "Localização"
+  - "SEO"
+  - "UI responsiva"
+  - "Arquitetura de conteúdo"
+summary:
+  problem: "Um portfólio precisa ser distinto sem virar um editor falso ou uma vitrine hardcoded."
+  solution: "Um shell persistente inspirado em editor lê metadados dos projetos em MDX para atualizar navegação, filtros e páginas automaticamente."
+  role: "Design, arquitetura frontend e sistema de conteúdo"
+---
+
+## Visão geral
+
+Este portfólio também é um projeto: um site em Next.js orientado por conteúdo que apresenta trabalhos de software por meio de uma interface original inspirada em editores. O shell usa ideias úteis de workspace, como explorador, abas, breadcrumbs, paleta de comandos e barra de status, enquanto as páginas continuam semânticas e legíveis.
+
+<Decision title="Portfólio como sistema de conteúdo">Adicionar um projeto deve significar adicionar um arquivo MDX e screenshots, não editar arrays de navegação ou componentes de página.</Decision>
+
+## O problema
+
+O objetivo era criar um portfólio memorável para desenvolvedores sem esconder os estudos de caso. Um clone literal de editor seria confuso, e um conjunto estático de cards ficaria chato de manter conforme os projetos crescessem.
+
+## Arquitetura
+
+Projetos vivem como arquivos MDX com frontmatter estruturada. Os mesmos metadados alimentam explorador, arquivo, busca, filtros, paleta de comandos, páginas de projeto, sitemap e navegação anterior/próximo.
+
+| Área | Decisão |
+| --- | --- |
+| Framework | Next.js App Router |
+| Conteúdo | Arquivos MDX locais com frontmatter |
+| Estilo | Tailwind CSS e paleta customizada inspirada em editor |
+| Localização | Rotas padrão em inglês e rotas localizadas em `/pt-BR` |
+| Fonte de dados | Conteúdo no filesystem, sem banco |
+
+## Decisões técnicas
+
+A implementação mantém Server Components como padrão e usa Client Components apenas para interações como paleta de comandos, drawer mobile, filtros e troca de idioma. A busca usa metadados leves em vez de carregar todo o corpo MDX no navegador.
+
+<Callout title="Padrão de extensão">Esta entrada serve para copiar ao adicionar projetos futuros: primeiro frontmatter, depois um estudo de caso legível, depois screenshots.</Callout>
+
+## Estado atual
+
+O site suporta rotas em inglês e português brasileiro, seleção automática no primeiro acesso por preferência de idioma do navegador, estudos de caso em MDX, metadados de SEO e navegação responsiva.
+
+## Aprendizados
+
+A metáfora de editor funciona melhor quando melhora a navegação em vez de virar decoração. O shell pode ser técnico e familiar enquanto o conteúdo principal continua sendo web normal e acessível.

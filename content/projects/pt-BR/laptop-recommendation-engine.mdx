@@ -1,0 +1,71 @@
+---
+slug: "laptop-recommendation-engine"
+fileName: "laptop-recommendation-engine.mdx"
+title: "Motor interativo de recomendação de laptops"
+shortDescription: "Um motor de recomendação assistido por LLM e fundamentado em uma base de laptops reais."
+year: 2026
+status: "Ajustes finais"
+featured: true
+repositoryUrl: ""
+liveUrl: ""
+coverImage: "/projects/laptop-recommendation-engine/cover.png"
+screenshots:
+  - src: "/projects/laptop-recommendation-engine/screenshot-01.png"
+    alt: "Consulta em linguagem natural para recomendação de laptop"
+    caption: "Usuários descrevem orçamento, portabilidade, bateria e desempenho em linguagem natural."
+  - src: "/projects/laptop-recommendation-engine/screenshot-02.png"
+    alt: "Extração estruturada de requisitos de laptop"
+    caption: "O sistema extrai restrições estruturadas antes de ranquear produtos reais."
+  - src: "/projects/laptop-recommendation-engine/screenshot-03.png"
+    alt: "Resultados fundamentados de recomendação de laptop"
+    caption: "As recomendações são selecionadas da base de produtos em vez de inventadas."
+tags:
+  - "LLM"
+  - "Motor de recomendação"
+  - "Base de produtos"
+  - "Linguagem natural"
+  - "Extração estruturada"
+  - "Ranking"
+  - "Busca semântica"
+  - "Laptops"
+  - "Vertical slice"
+summary:
+  problem: "Requisitos de compra costumam aparecer em linguagem confusa, mas boas recomendações precisam de dados de produto fundamentados."
+  solution: "O sistema separa interpretação por LLM do ranking para manter recomendações ligadas a registros reais de laptops."
+  role: "Arquitetura de produto e desenvolvimento full-stack"
+---
+
+## Visão geral
+
+O motor de recomendação de laptops é uma vertical slice para ajudar usuários a transformar requisitos em linguagem natural em sugestões fundamentadas. A versão atual é intencionalmente limitada a laptops.
+
+<Decision title="Recomendações fundamentadas">A LLM interpreta intenção, mas a recomendação final precisa vir de uma base real de produtos.</Decision>
+
+## O problema
+
+Uma pessoa pode pedir um laptop para programação, faculdade, jogos, viagens, bateria ou orçamento rígido. Esses pedidos são ambíguos, mas a recomendação precisa retornar produtos reais com motivos claros.
+
+## Arquitetura
+
+O sistema separa interpretação de ranking. O modelo ajuda a extrair orçamento, uso e preferências. A camada de ranking aplica filtros e regras fundamentadas contra a base de laptops.
+
+| Etapa | Responsabilidade |
+| --- | --- |
+| Interpretação | Converter linguagem em restrições estruturadas |
+| Recuperação | Selecionar laptops candidatos em registros reais |
+| Ranking | Equilibrar orçamento, desempenho, bateria e portabilidade |
+| Explicação | Descrever por que cada resultado se encaixa |
+
+## Decisões técnicas
+
+Manter a LLM longe da invenção final de produtos é a decisão central. Ela pode explicar, classificar e extrair, mas a lista de produtos continua vinculada ao banco.
+
+<Callout title="Escopo vertical">A implementação atual foca apenas em laptops. A arquitetura deixa espaço para categorias futuras, mas o comportamento público deve ser honesto sobre o escopo atual.</Callout>
+
+## Estado atual
+
+O projeto está recebendo ajustes finais. Links de live e código aparecerão automaticamente depois que URLs reais forem adicionadas à frontmatter.
+
+## Aprendizados
+
+Sistemas de recomendação precisam de disciplina de produto tanto quanto de capacidade de modelo. Separar interpretação por modelo do ranking determinístico torna a aplicação mais testável, explicável e segura.
