@@ -1,6 +1,6 @@
 # Iago Bussoletti Portfolio
 
-Production-ready personal portfolio for Iago Bussoletti, built with Next.js App Router, JavaScript, Tailwind CSS, and MDX. The interface is inspired by a developer workspace: projects behave like files, pages appear as editor tabs, project tags power the archive filters, and the command palette provides fast navigation.
+Personal portfolio for Iago Bussoletti, built with Next.js App Router, JavaScript, Tailwind CSS, and MDX. The interface is inspired by a developer workspace: projects behave like files, pages appear as editor tabs, project tags power the archive filters, and the command palette provides fast navigation.
 
 ## Run locally
 
@@ -87,8 +87,6 @@ Open the command palette from the title bar search button or with `Ctrl+K` / `Cm
 Desktop uses a title bar, activity bar, explorer sidebar, editor tabs, main content, outline where useful, and status bar. On smaller screens the permanent activity bar is hidden, the explorer opens as a drawer, tabs scroll horizontally, and content uses the full viewport width.
 
 ## Deployment without Docker
-
-The project is designed for Vercel:
 
 ```bash
 npm run build
