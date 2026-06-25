@@ -67,5 +67,5 @@ jobs:
           script_stop: true
           script: |
             cd "${{ secrets.DEPLOY_PATH }}"
-            docker compose -f compose.yml -f projects/${{ env.SERVICE_NAME }}.compose.yml pull ${{ env.SERVICE_NAME }}
-            docker compose -f compose.yml -f projects/${{ env.SERVICE_NAME }}.compose.yml up -d --no-deps ${{ env.SERVICE_NAME }}
+            sudo docker compose -f compose.yml -f projects/${{ env.SERVICE_NAME }}.compose.yml pull ${{ env.SERVICE_NAME }}
+            sudo docker compose -f compose.yml -f projects/${{ env.SERVICE_NAME }}.compose.yml up -d --no-deps ${{ env.SERVICE_NAME }}
