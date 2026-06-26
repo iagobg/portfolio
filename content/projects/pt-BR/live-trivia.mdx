@@ -2,70 +2,149 @@
 slug: "live-trivia"
 fileName: "live-trivia.mdx"
 title: "Live Trivia"
-shortDescription: "Uma aplicação multiplayer de perguntas e respostas construída em torno de interações em tempo real."
+shortDescription: "Uma aplicação de sala de trivia em Phoenix LiveView para eventos ao vivo, com estado autoritativo no servidor, presença de jogadores, balões de digitação e testes sintéticos de performance."
 year: 2026
-status: "Ajustes finais"
+status: "Publicado"
 featured: true
-repositoryUrl: ""
-liveUrl: ""
-coverImage: "/projects/live-trivia/cover.png"
+repositoryUrl: "https://github.com/iagobg/live_trivia"
+liveUrl: "https://livetrivia.iagobussoletti.com.br"
+coverImage: "/projects/live-trivia/capture-3.png"
 screenshots:
-  - src: "/projects/live-trivia/screenshot-01.png"
-    alt: "Controles administrativos de uma rodada ativa"
-    caption: "O administrador controla perguntas, dicas, temporizadores e estado da rodada."
-  - src: "/projects/live-trivia/screenshot-02.png"
-    alt: "Interface mobile do jogador durante uma rodada"
-    caption: "Jogadores enviam respostas em seus próprios dispositivos enquanto veem atividade sincronizada."
-  - src: "/projects/live-trivia/screenshot-03.png"
-    alt: "Tela de resultados e pontuação ao vivo"
-    caption: "Pontuações e atualizações de rodada são propagadas aos participantes conectados."
+  - src: "/projects/live-trivia/capture-1.png"
+    alt: "Lobby do Live Trivia mostrando salas abertas, criação de sala e cards de status"
+    caption: "O lobby mantém criação e descoberta de salas rápidas para hosts e jogadores."
+  - src: "/projects/live-trivia/capture-2.png"
+    alt: "Tela de entrada do jogador com campo de nome e seleção de cor"
+    caption: "Jogadores entram pelos próprios dispositivos com um nome e uma cor reservada."
+  - src: "/projects/live-trivia/capture-3.png"
+    alt: "Visão administrativa da sala com jogadores em volta de um palco central e balões de digitação ao vivo"
+    caption: "A visão do host transforma a sala em um palco ao vivo com presença de jogadores, controles do quiz e teste sintético de carga."
+  - src: "/projects/live-trivia/capture-4.png"
+    alt: "Tela mobile de jogo com lista compacta de jogadores e balões de digitação flutuantes"
+    caption: "A experiência do jogador é otimizada para teclados de celular e telas pequenas."
 tags:
-  - "Elixir"
   - "Phoenix"
-  - "Phoenix LiveView"
-  - "WebSockets"
-  - "Tempo real"
-  - "Multiusuário"
-  - "Eventos frequentes"
-  - "Estado no servidor"
-  - "UI responsiva"
+  - "LiveView"
+  - "Elixir"
+  - "OTP"
+  - "PubSub"
+  - "Presence"
+  - "Phoenix Channels"
+  - "Tailwind CSS"
+  - "UI em tempo real"
+  - "Teste de performance"
+  - "Docker"
+  - "GitHub Actions"
 summary:
-  problem: "Sessões de trivia precisam de tempo compartilhado, participação visível e estado consistente entre muitos dispositivos."
-  solution: "Phoenix LiveView mantém o servidor como fonte de verdade e envia mudanças leves de estado aos jogadores conectados."
-  role: "Desenvolvimento full-stack"
+  problem: "Um jogo de trivia ao vivo precisa parecer imediato em vários celulares, mantendo as regras consistentes e fáceis de controlar pelo host."
+  solution: "Phoenix LiveView gerencia o ciclo de vida da sala e o estado do jogo, enquanto Phoenix Channels carrega balões de digitação de alta frequência por payloads compactos que evitam re-renderizações desnecessárias do LiveView."
+  role: "Design de produto, implementação em LiveView, arquitetura OTP, UX em tempo real, benchmarking e automação de deploy"
 ---
 
 ## Visão geral
 
-Live Trivia é uma aplicação multiplayer em que um administrador conduz a sessão e jogadores entram pelos próprios dispositivos. A restrição mais importante é coordenação: perguntas, dicas, temporizadores, respostas, presença e pontuação precisam evoluir juntos sem cada cliente inventar sua própria versão do jogo.
+Live Trivia é uma aplicação de sala de trivia em tempo real criada para sessões de jogo: um host cria uma sala, carrega um quiz em JSON, inicia as rodadas, e jogadores entram pelos próprios dispositivos para tentar adivinhar respostas enquanto a sala atualiza ao vivo.
 
-<Decision title="Direção principal">Phoenix LiveView combina com o formato do projeto porque o servidor pode ser dono do estado do jogo enquanto clientes recebem atualizações focadas de interface.</Decision>
+O projeto começou como uma aplicação Phoenix LiveView e cresceu para uma superfície completa de evento ao vivo: salas públicas e protegidas por senha, reserva de cores, presença de jogadores, temporizadores no servidor, dicas agendadas, pontuação por chute mais próximo, pódio final, tratamento de teclado mobile e um benchmark sintético exclusivo para admins para testar o ponto de pressão da experiência.
+
+<Decision title="O servidor é dono do jogo">LiveView e OTP mantêm o estado do quiz autoritativo para que jogadores possam reconectar, admins possam avançar rodadas e a lógica de pontuação fique em um só lugar.</Decision>
 
 ## O problema
 
-Trivia parece simples até várias pessoas responderem quase ao mesmo tempo, alguém reconectar no meio da rodada, ou um temporizador variar entre dispositivos. A aplicação precisa de uma fonte única de verdade que lide com eventos frequentes e mantenha a interface mobile responsiva.
+Jogos de trivia são enganosamente difíceis de fazer parecer justos. A interface pode ser divertida, mas tempo, pontuação, participação na sala e escolha do vencedor precisam ser consistentes para todos.
+
+A principal tensão era que a parte mais expressiva da interface também era a mais cara: todo mundo digitando ao mesmo tempo. Mostrar balões de digitação ao vivo em volta de um palco orbital de jogadores deixa o jogo vivo, mas essas atualizações são frequentes demais para serem tratadas como estado normal do LiveView.
+
+## Fluxo do produto
+
+O lobby dá aos hosts um caminho rápido para criar uma sala, protegê-la opcionalmente com senha e ver quais salas estão abertas. Os cards de sala mostram os detalhes que importam no momento: número de jogadores, presença do admin, se a sala está aberta e em qual fase o jogo está.
+
+Jogadores entram por uma tela focada de perfil, com campo de nome e seletor de cor. O lobby reserva vagas e cores antes de o jogador entrar completamente na sala, evitando a corrida estranha em que duas pessoas escolhem a mesma identidade ao mesmo tempo.
+
+A tela do host é a sala de controle. Ela combina carregamento de quiz, dados de demonstração, controles de rodada, reset e fechamento da sala, presença ao vivo, balões de digitação, pontuações e um teste sintético com 16 jogadores em uma interface com cara de palco.
 
 ## Arquitetura
 
-O servidor é tratado como autoridade da sala. Eventos dos jogadores fluem para o backend, o estado é atualizado em um lugar, e o LiveView transmite as mudanças visíveis de volta ao navegador.
+A aplicação usa Phoenix para a camada HTTP e websocket, LiveView para telas com estado, processos OTP para estado da sala e PubSub/Presence para coordenação em tempo real.
 
 | Área | Decisão |
 | --- | --- |
-| Controle da sessão | Estado comandado pelo administrador |
-| Atualizações dos jogadores | Eventos e patches do LiveView |
-| Estado compartilhado | Modelo de dados no servidor |
-| Suporte mobile | Controles compactos e layouts responsivos |
+| Framework | Phoenix 1.8 e Phoenix LiveView |
+| Estado do jogo | Um GenServer `LiveTrivia.Game` por sala |
+| Ciclo de vida da sala | `LiveTrivia.Lobby` acompanha salas, senhas, vagas de jogadores, cores e limpeza |
+| Fanout em tempo real | Phoenix PubSub transmite atualizações autoritativas do jogo |
+| Presence | Phoenix Presence acompanha admins, jogadores e ocupação de cores |
+| Entrada de alta frequência | Phoenix Channels transmite balões de digitação fora do ciclo de diffs do LiveView |
+| Persistência | Salas em memória com limites para sessões ao vivo, sem banco de dados |
+| Deploy | Imagem Docker de release publicada no GHCR e republicada por GitHub Actions |
 
-## Decisões técnicas
+<Callout title="Limitado por design">O modelo atual limita salas e jogadores por sala porque o produto é voltado para sessões ao vivo, não para jogos armazenados de longa duração.</Callout>
 
-Phoenix e Elixir deixam espaço para modelagem orientada a processos. Uma sala pode ser pensada como um sistema ativo, não como um conjunto de submissões isoladas de formulário.
+## Motor do jogo
 
-<Callout title="Foco de implementação">A parte mais forte do projeto é o modelo de coordenação em tempo real: manter todos os participantes alinhados sem excesso de estado no cliente.</Callout>
+`LiveTrivia.Game` é o motor autoritativo de uma sala. Ele controla a fase atual, perguntas carregadas, rodada ativa, temporizadores, dicas reveladas, pontuações, chute mais próximo e estado do pódio.
+
+Cada rodada é conduzida por temporizadores no servidor. Dicas são agendadas em offsets fixos, a rodada tem timeout do lado do servidor, e mensagens antigas de timer são ignoradas carregando um identificador de rodada pelo ciclo de vida. Esse detalhe importa porque um host pode resetar ou recarregar um quiz enquanto mensagens agendadas antigas ainda estão esperando na mailbox.
+
+A pontuação recompensa respostas corretas rápidas sem deixar quase-acertos sem sentido. Uma checagem de distância de Levenshtein categoriza palpites como corretos, próximos, quase ou distantes; se ninguém responder exatamente antes do timeout, o chute mais próximo pode receber pontos de consolação.
+
+## UX em tempo real
+
+O primeiro caminho de implementação usava LiveView para toda a experiência. Isso funcionou para mudanças de estado autoritativas, mas os balões de digitação revelaram outra classe de tráfego: atualizações pequenas, frequentes e visuais que não precisam alterar o estado canônico do jogo.
+
+A arquitetura posterior baseada em channels separa essas responsabilidades:
+
+| Fluxo | Transporte | Propósito |
+| --- | --- | --- |
+| Estado da sala e do jogo | LiveView e PubSub | Mudanças de fase, perguntas, dicas, pontuações, pódio e ações de admin |
+| Presence | Phoenix Presence | Ocupação de jogadores/admins e estado de cores |
+| Balões de digitação | Phoenix Channels | Previews de texto de alta frequência e animações de balões enviados |
+
+<Decision title="LiveView para decisões, channels para movimento">O jogo continua autoritativo no servidor, mas o tráfego visual de digitação evita os diffs do LiveView para manter o palco responsivo sob carga.</Decision>
+
+## História de performance
+
+O histórico do Git mostra o projeto passando por pontos de pressão claros: lobbies e PubSub primeiro, depois ajustes mobile, reformulação da digitação, benchmarking, otimização de payloads, payloads binários e, por fim, endurecimento do deploy.
+
+O trabalho de performance ficou concreto por meio de um benchmark sintético acionado pelo admin. A aplicação consegue criar uma sala de benchmark, conectar 16 jogadores sintéticos, carregar o quiz demo, iniciar uma rodada e medir a latência das atualizações de digitação tanto pelo navegador quanto pelo servidor.
+
+Os logs do servidor registram taxa de mensagens de digitação, bytes de payload, tempo do handler do channel, reductions da BEAM, memória da BEAM, contagem de processos, run queue, RSS e amostras de CPU. Os resumos no navegador acompanham média, p50, p95, p99, máximo, recebimento e tempos de DOM no caminho dos balões de digitação.
+
+Esse ciclo de feedback moldou duas mudanças grandes: mover o throttle da entrada para o cliente e reduzir os payloads de digitação. Identificadores de jogador e sala viraram valores compactos baseados em slots, e o caminho mais recente de channel suporta payloads binários para atualizações de digitação.
+
+Depois de mover o deploy para uma VPS da Oracle, o teste sintético com 16 jogadores deixou de ser limitado por CPU. A mesma sala simulada agora fica em torno de 0,7% de uso de CPU, transformando o benchmark de sinal de alerta em guarda de regressão para mudanças futuras de UI e transporte.
+
+<Decision title="Medir antes de trocar o modelo">O gargalo foi resolvido por ajuste de transporte e encaixe de deploy, sem abandonar a arquitetura autoritativa em LiveView que mantém o jogo justo.</Decision>
+
+## Design mobile
+
+O trabalho mobile não foi um detalhe de última hora. Várias entradas do histórico são dedicadas ao comportamento em celular, especialmente correções de viewport e teclado.
+
+Em telas pequenas, o layout orbital de desktop vira uma lista compacta, e os balões de digitação são distribuídos em slots específicos para mobile. Hooks JavaScript observam o visual viewport, atualizam variáveis CSS e mantêm a entrada do jogador usável quando o teclado do celular abre.
+
+O resultado é uma tela de jogador que ainda parece conectada ao palco compartilhado sem forçar o layout de desktop em uma viewport estreita.
+
+## Deploy
+
+A camada de deploy segue a mesma filosofia prática da arquitetura de runtime: manter a aplicação pública autocontida, deixar segredos operacionais em outro lugar e republicar apenas o serviço que mudou.
+
+O Dockerfile cria um release Phoenix de produção e roda na porta `3070`. O workflow atual do GitHub Actions constrói uma imagem Linux ARM64 em runner ARM, publica no GitHub Container Registry e depois acessa por SSH o host de deploy na VPS da Oracle para puxar e recriar somente o serviço `live-trivia` com Docker Compose.
+
+```text
+docker compose -f compose.yml -f projects/live-trivia.compose.yml pull live-trivia
+docker compose -f compose.yml -f projects/live-trivia.compose.yml up -d --no-deps live-trivia
+```
+
+`--no-deps` mantém serviços irmãos estáveis durante um deploy do Live Trivia, o que importa quando a aplicação é um projeto dentro de um setup maior de portfólio/servidor.
 
 ## Estado atual
 
-O projeto está recebendo ajustes finais antes da publicação dos links de deploy e repositório. O portfólio deixa essas ações ocultas até que a frontmatter tenha URLs reais.
+Live Trivia atualmente suporta criação de sala, senhas opcionais, seleção de cor, controles de host, carregamento de quiz em JSON, carregamento de quiz demo, rodadas temporizadas, dicas agendadas, pontuação de palpites, fallback para chute mais próximo, tela de pódio, presença de jogadores/admins, balões de digitação via channels, tratamento de viewport mobile, telemetria de benchmark, releases Docker e redeploys direcionados em produção.
 
 ## Aprendizados
 
-Interfaces em tempo real melhoram quando a propriedade do estado é muito clara. Quando o servidor é a fonte autoritativa, a UI fica menor, mais fácil de sincronizar e mais fácil de entender sob carga.
+LiveView é excelente para fazer estado compartilhado parecer simples, mas nem toda mensagem de websocket deve virar estado do LiveView. A versão mais forte desta aplicação veio de separar autoridade de ambientação: o servidor decide o jogo, enquanto channels carregam o movimento leve que faz a sala parecer viva.
+
+O projeto também tornou performance visível em vez de teórica. Depois que a sala sintética existiu, a otimização ganhou um alvo: menos bytes, menos renderização desnecessária, números de latência mais claros e uma forma repetível de confirmar que o deploy na VPS da Oracle removeu o gargalo de CPU.
+
+O formato final é intencionalmente modesto em armazenamento e escopo, mas ambicioso onde o usuário sente: um host consegue conduzir uma sala, jogadores entram pelo celular, e o jogo inteiro tem a imediaticidade de pessoas digitando e reagindo juntas no mesmo lugar.

@@ -22,6 +22,10 @@ function getHeadings(content) {
   }));
 }
 
+export function generateStaticParams() {
+  return getAllProjects("en").map((project) => ({ slug: project.slug }));
+}
+
 async function MdxContent({ source }) {
   const { default: Content } = await evaluate(source, {
     ...runtime,
@@ -31,20 +35,16 @@ async function MdxContent({ source }) {
   return <Content components={mdxComponents} />;
 }
 
-export function generateStaticParams() {
-  return getAllProjects("pt-BR").map((project) => ({ slug: project.slug }));
-}
-
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug, "pt-BR");
+  const project = getProjectBySlug(slug, "en");
   if (!project) return {};
-  return projectMetadata(project, `/pt-BR/projects/${project.slug}`);
+  return projectMetadata(project, `/en/projects/${project.slug}`);
 }
 
-export default async function ProjectPagePtBr({ params }) {
+export default async function ProjectPageEn({ params }) {
   const { slug } = await params;
-  const locale = "pt-BR";
+  const locale = "en";
   const t = dictionary(locale);
   const project = getProjectBySlug(slug, locale);
   if (!project) notFound();
@@ -56,7 +56,7 @@ export default async function ProjectPagePtBr({ params }) {
     "@type": "CreativeWork",
     name: project.title,
     description: project.shortDescription,
-    url: absoluteUrl(`/pt-BR/projects/${project.slug}`),
+    url: absoluteUrl(`/en/projects/${project.slug}`),
     dateCreated: String(project.year),
     keywords: project.tags.join(", "),
     creator: {

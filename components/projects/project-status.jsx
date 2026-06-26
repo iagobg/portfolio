@@ -1,7 +1,11 @@
 const statusTone = {
   Live: "border-success/50 bg-success/10 text-success",
+  Deployed: "border-success/50 bg-success/10 text-success",
+  Publicado: "border-success/50 bg-success/10 text-success",
   "Finishing touches": "border-warning/50 bg-warning/10 text-warning",
   "Ajustes finais": "border-warning/50 bg-warning/10 text-warning",
+  "Polishing / Content": "border-warning/50 bg-warning/10 text-warning",
+  "Polimento / Conteúdo": "border-warning/50 bg-warning/10 text-warning",
   "In development": "border-accent-400/50 bg-accent-500/10 text-accent-300",
   "Em desenvolvimento": "border-accent-400/50 bg-accent-500/10 text-accent-300",
   Archived: "border-ink-500 bg-workbench-850 text-ink-300"

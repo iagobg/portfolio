@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Github } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { ProjectTag } from "@/components/content/tag";
+import { ProjectLinks } from "@/components/projects/project-links";
 import { ProjectStatus } from "@/components/projects/project-status";
 import { localizePath } from "@/lib/i18n";
 
@@ -58,29 +59,8 @@ export function ProjectCard({ project, locale = "en", t }) {
           >
             {t.openCaseStudy} <ArrowUpRight size={14} aria-hidden="true" />
           </Link>
-          {project.repositoryUrl ? (
-            <Link
-              href={project.repositoryUrl}
-              className="inline-flex items-center gap-1 hover:text-accent-300"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Github size={14} aria-hidden="true" /> {t.source}
-            </Link>
-          ) : null}
-          {project.liveUrl ? (
-            <Link
-              href={project.liveUrl}
-              className="inline-flex items-center gap-1 hover:text-accent-300"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {t.live} <ArrowUpRight size={14} aria-hidden="true" />
-            </Link>
-          ) : (
-            <span className="text-ink-400">{t.deploymentSoon}</span>
-          )}
         </div>
+        <ProjectLinks project={project} t={t} variant="compact" />
       </div>
     </article>
   );

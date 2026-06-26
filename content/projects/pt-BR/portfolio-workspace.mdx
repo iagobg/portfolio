@@ -4,10 +4,10 @@ fileName: "portfolio-workspace.mdx"
 title: "Portfolio Workspace"
 shortDescription: "Um portfólio em Next.js apresentado como workspace inspirado em editor e movido por projetos em MDX."
 year: 2026
-status: "Ajustes finais"
+status: "Polimento / Conteúdo"
 featured: true
-repositoryUrl: ""
-liveUrl: ""
+repositoryUrl: "https://github.com/iagobg/portfolio"
+liveUrl: "https://iagobussoletti.com.br"
 coverImage: "/projects/portfolio-workspace/cover.png"
 screenshots:
   - src: "/projects/portfolio-workspace/screenshot-01.png"
@@ -28,10 +28,12 @@ tags:
   - "SEO"
   - "UI responsiva"
   - "Arquitetura de conteúdo"
+  - "Docker"
+  - "GitHub Actions"
 summary:
   problem: "Um portfólio precisa ser distinto sem virar um editor falso ou uma vitrine hardcoded."
-  solution: "Um shell persistente inspirado em editor lê metadados dos projetos em MDX para atualizar navegação, filtros e páginas automaticamente."
-  role: "Design, arquitetura frontend e sistema de conteúdo"
+  solution: "Um shell persistente inspirado em editor lê metadados dos projetos em MDX para atualizar navegação, filtros, páginas e links de deploy com pouca coordenação."
+  role: "Design, arquitetura frontend, sistema de conteúdo e arquitetura de deploy"
 ---
 
 ## Visão geral
@@ -53,7 +55,7 @@ Projetos vivem como arquivos MDX com frontmatter estruturada. Os mesmos metadado
 | Framework | Next.js App Router |
 | Conteúdo | Arquivos MDX locais com frontmatter |
 | Estilo | Tailwind CSS e paleta customizada inspirada em editor |
-| Localização | Rotas padrão em inglês e rotas localizadas em `/pt-BR` |
+| Localização | Rotas em inglês sob `/en` e rotas em português sob `/pt-BR`, com `/` redirecionando para `/pt-BR` |
 | Fonte de dados | Conteúdo no filesystem, sem banco |
 
 ## Decisões técnicas
@@ -62,10 +64,44 @@ A implementação mantém Server Components como padrão e usa Client Components
 
 <Callout title="Padrão de extensão">Esta entrada serve para copiar ao adicionar projetos futuros: primeiro frontmatter, depois um estudo de caso legível, depois screenshots.</Callout>
 
+## Camada modular de deploy
+
+O portfólio acabou virando a porta de entrada pública para vários projetos independentes, então o modelo de deploy precisava evitar que toda atualização virasse um restart do stack inteiro. A forma final separa os repositórios públicos das aplicações de um plano de controle privado de deploy:
+
+| Camada | Responsabilidade |
+| --- | --- |
+| Repositórios dos projetos | Código da aplicação, Dockerfiles e workflows do GitHub Actions |
+| GitHub Container Registry | Armazena uma imagem por projeto |
+| Diretório privado de deploy | Compose overlays, rotas do Caddy, env files de runtime e volumes |
+| VPS na Oracle | Roda Caddy e containers dos projetos em uma rede Docker interna |
+
+Cada projeto é representado por dois pequenos arquivos privados de deploy: um overlay do Compose para o serviço e uma rota do Caddy para o subdomínio. O portfólio fica no domínio raiz, enquanto os projetos usam subdomínios como `futemon.<domínio>` e `livetrivia.<domínio>`.
+
+<Decision title="Um projeto, um redeploy">Um push no Futemon deve publicar e recriar apenas o container do Futemon. O portfólio e os outros projetos devem continuar rodando.</Decision>
+
+Os workflows do GitHub Actions publicam imagens no GHCR e depois acessam a VPS por SSH para rodar uma atualização direcionada com Compose:
+
+```text
+docker compose -f compose.yml -f projects/<service>.compose.yml pull <service>
+docker compose -f compose.yml -f projects/<service>.compose.yml up -d --no-deps <service>
+```
+
+`--no-deps` evita recriar serviços não relacionados. Os segredos de runtime ficam na VPS em env files privados, então os repositórios públicos continuam reutilizáveis sem carregar credenciais ou estado específico do ambiente.
+
+## Aprendizados de produção
+
+O trabalho de deploy expôs problemas que raramente aparecem em um build local: atraso em delegação de DNS, validação de certificados pelo Caddy, permissões do socket Docker em sessões SSH do GitHub Actions, acesso privado ao GHCR e compatibilidade de imagens ARM64 nas instâncias Ampere da Oracle.
+
+Esses problemas moldaram o setup final. Os workflows agora geram imagens ARM64 em runners ARM64 hospedados pelo GitHub, o Caddy roda em container junto com o stack, e a documentação de deploy separa setup inicial da VPS de redeploys por projeto.
+
+<Limitation title="Limite operacional">O plano de controle de deploy é intencionalmente privado. O portfólio documenta a arquitetura, mas segredos, env files reais e estado específico da VPS vivem fora do repositório público.</Limitation>
+
 ## Estado atual
 
-O site suporta rotas em inglês e português brasileiro, seleção automática no primeiro acesso por preferência de idioma do navegador, estudos de caso em MDX, metadados de SEO e navegação responsiva.
+O site suporta rotas em inglês e português brasileiro, seleção automática no primeiro acesso por preferência de idioma do navegador, estudos de caso em MDX, metadados de SEO, navegação responsiva, publicação de imagens Docker e deploy modular na VPS para projetos irmãos.
 
 ## Aprendizados
 
 A metáfora de editor funciona melhor quando melhora a navegação em vez de virar decoração. O shell pode ser técnico e familiar enquanto o conteúdo principal continua sendo web normal e acessível.
+
+A camada de deploy seguiu o mesmo princípio: usar ferramentas familiares de um jeito que reduza coordenação. Um novo projeto deve precisar de um Dockerfile, um overlay do Compose, uma rota do Caddy e um workflow, não de um redesenho do portfólio inteiro.

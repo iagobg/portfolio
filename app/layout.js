@@ -19,12 +19,12 @@ export const metadata = {
   },
   description: siteConfig.description,
   alternates: {
-    canonical: absoluteUrl("/")
+    canonical: absoluteUrl("/pt-BR")
   },
   openGraph: {
     title: siteConfig.title,
     description: siteConfig.description,
-    url: absoluteUrl("/"),
+    url: absoluteUrl("/pt-BR"),
     type: "website"
   },
   twitter: {
@@ -67,7 +67,7 @@ export default function RootLayout({ children }) {
   ];
 
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body>
         <script
           type="application/ld+json"

@@ -57,9 +57,6 @@ export function TitleBar({ title, onCommand, onExplorer, onToggleExplorer, explo
         </button>
         <Link
           href={switchLocalePath(pathname, nextLocale)}
-          onClick={() => {
-            document.cookie = `preferredLocale=${nextLocale}; path=/; max-age=31536000; samesite=lax`;
-          }}
           className="inline-flex h-8 items-center rounded border border-workbench-600 px-2 font-mono text-xs text-ink-200 hover:border-accent-500 hover:text-accent-300"
           hrefLang={nextLocale}
           aria-label={`Switch language to ${nextLocale}`}

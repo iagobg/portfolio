@@ -8,7 +8,7 @@ export default function NotFound() {
       <p className="mt-3 text-ink-300">
         This route does not match a project MDX file or portfolio page.
       </p>
-      <Link href="/projects" className="mt-6 inline-flex rounded bg-accent-400 px-4 py-2 font-mono text-sm font-semibold text-workbench-950 hover:bg-accent-300">
+      <Link href="/pt-BR/projects" className="mt-6 inline-flex rounded bg-accent-400 px-4 py-2 font-mono text-sm font-semibold text-workbench-950 hover:bg-accent-300">
         Back to projects
       </Link>
     </main>
