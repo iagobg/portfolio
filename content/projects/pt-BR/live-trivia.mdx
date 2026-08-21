@@ -8,7 +8,7 @@ status: "Publicado"
 featured: true
 repositoryUrl: "https://github.com/iagobg/live_trivia"
 liveUrl: "https://livetrivia.iagobussoletti.com.br"
-coverImage: "/projects/live-trivia/capture-3.png"
+coverImage: "/projects/live-trivia/logo.png"
 screenshots:
   - src: "/projects/live-trivia/capture-1.png"
     alt: "Lobby do Live Trivia mostrando salas abertas, criação de sala e cards de status"
@@ -22,9 +22,11 @@ screenshots:
   - src: "/projects/live-trivia/capture-4.png"
     alt: "Tela mobile de jogo com lista compacta de jogadores e balões de digitação flutuantes"
     caption: "A experiência do jogador é otimizada para teclados de celular e telas pequenas."
+  - src: "/projects/live-trivia/logo.png"
+    alt: "Live Trivia"
+    caption: "Logo do app."
 tags:
-  - "Phoenix"
-  - "LiveView"
+  - "Phoenix LiveView"
   - "Elixir"
   - "OTP"
   - "PubSub"
@@ -35,10 +37,19 @@ tags:
   - "Teste de performance"
   - "Docker"
   - "GitHub Actions"
+techStack:
+  - "Elixir"
+  - "Phoenix LiveView"
+  - "Tailwind CSS"
+  - "Docker"
 summary:
   problem: "Um jogo de trivia ao vivo precisa parecer imediato em vários celulares, mantendo as regras consistentes e fáceis de controlar pelo host."
   solution: "Phoenix LiveView gerencia o ciclo de vida da sala e o estado do jogo, enquanto Phoenix Channels carrega balões de digitação de alta frequência por payloads compactos que evitam re-renderizações desnecessárias do LiveView."
   role: "Design de produto, implementação em LiveView, arquitetura OTP, UX em tempo real, benchmarking e automação de deploy"
+outcomes:
+  - "Estado autoritativo da sala fica em processos OTP enquanto LiveView renderiza o fluxo canônico do jogo."
+  - "Balões de digitação de alta frequência foram movidos para Phoenix Channels com payloads compactos para evitar diffs desnecessários do LiveView."
+  - "O benchmark sintético com 16 jogadores roda em torno de 0,7% de CPU no deploy atual na VPS Oracle."
 ---
 
 ## Visão geral

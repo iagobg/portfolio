@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { FolderKanban, Github, Home, Search } from "lucide-react";
 import { localizePath } from "@/lib/i18n";
@@ -15,8 +16,15 @@ export function ActivityBar({ activeSection, onCommand, locale, t }) {
 
   return (
     <nav className="fixed inset-y-0 left-0 z-50 hidden w-12 flex-col border-r border-workbench-700 bg-workbench-900 pt-2 lg:flex" aria-label="Primary">
-      <Link href={localizePath("/", locale)} className="mx-auto mb-4 grid h-8 w-8 place-items-center border border-workbench-600 bg-workbench-800 font-mono text-xs font-bold text-ink-100" title="Iago Bussoletti">
-        IB
+      <Link href={localizePath("/", locale)} className="mx-auto mb-4 grid h-8 w-8 place-items-center border border-workbench-600 bg-workbench-800 p-1" title="Iago Bussoletti" aria-label="Iago Bussoletti home">
+        <Image
+          src="/logo.png"
+          alt=""
+          width={24}
+          height={24}
+          className="h-6 w-6"
+          priority
+        />
       </Link>
       <div className="grid gap-1">
         {items.map((item) => {

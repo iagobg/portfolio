@@ -48,7 +48,7 @@ export function CommandPalette({ open, onClose, projects, tags, locale, t }) {
     }));
     const tagCommands = tags.map((tag) => ({
       label: t.commands.filterBy(tag.label),
-      detail: `${tag.count} project${tag.count === 1 ? "" : "s"}`,
+      detail: t.commands.detail(tag.count),
       href: `${localizePath("/projects", locale)}?tags=${tag.slug}`,
       icon: Tag
     }));

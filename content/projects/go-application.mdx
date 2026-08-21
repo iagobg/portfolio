@@ -28,10 +28,19 @@ tags:
   - "Semantic search"
   - "Server-rendered UI"
   - "Live events"
+techStack:
+  - "Go"
+  - "Templ"
+  - "HTMX"
+  - "LLM"
 summary:
   problem: "The project explores semantic search and live interactions without giving up a small server-rendered architecture."
   solution: "Go handles the backend flow, Templ keeps views explicit, and embeddings add similarity-based retrieval where keyword search is too narrow."
   role: "Backend and server-rendered UI development"
+outcomes:
+  - "Server-rendered UI keeps the architecture small while still supporting focused live updates."
+  - "Embedding work is isolated from deterministic ranking and backend flow."
+  - "Public details stay intentionally limited until product claims can be verified."
 ---
 
 ## Overview

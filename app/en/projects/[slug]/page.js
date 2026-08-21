@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { evaluate } from "@mdx-js/mdx";
 import remarkGfm from "remark-gfm";
 import * as runtime from "react/jsx-runtime";
+import { ProjectBrief } from "@/components/content/project-brief";
 import { ProjectOutline } from "@/components/content/project-outline";
 import { ProjectTag } from "@/components/content/tag";
 import { mdxComponents } from "@/components/content/mdx-components";
@@ -91,11 +92,11 @@ export default async function ProjectPageEn({ params }) {
           </div>
           <div className="mt-6 flex flex-wrap items-center gap-3 font-mono text-sm text-ink-300">
             <span>{project.year}</span>
-            <span aria-hidden="true">/</span>
-            <span>{project.summary.role}</span>
           </div>
           <ProjectLinks project={project} t={t} />
         </header>
+
+        <ProjectBrief project={project} t={t} />
 
         {project.coverImage ? (
           <div className="my-8 overflow-hidden rounded border border-workbench-700 bg-workbench-900">

@@ -8,7 +8,7 @@ status: "Deployed"
 featured: true
 repositoryUrl: "https://github.com/iagobg/live_trivia"
 liveUrl: "https://livetrivia.iagobussoletti.com.br"
-coverImage: "/projects/live-trivia/capture-3.png"
+coverImage: "/projects/live-trivia/logo.png"
 screenshots:
   - src: "/projects/live-trivia/capture-1.png"
     alt: "Live Trivia lobby showing open rooms, room creation, and room status cards"
@@ -35,10 +35,19 @@ tags:
   - "Performance testing"
   - "Docker"
   - "GitHub Actions"
+techStack:
+  - "Elixir"
+  - "Phoenix LiveView"
+  - "Tailwind CSS"
+  - "Docker"
 summary:
   problem: "A live trivia game needs to feel immediate across many phones while keeping the game rules consistent and easy for a host to control."
   solution: "Phoenix LiveView owns the room lifecycle and game state, while Phoenix Channels carry high-frequency typing bubbles through compact payloads that avoid unnecessary LiveView re-renders."
   role: "Product design, LiveView implementation, OTP architecture, real-time UX, benchmarking, and deployment automation"
+outcomes:
+  - "Authoritative room state stays in OTP processes while LiveView renders the canonical game flow."
+  - "High-frequency typing bubbles moved to Phoenix Channels with compact payloads to avoid unnecessary LiveView diffs."
+  - "The 16-player synthetic benchmark now runs around 0.7% CPU on the Oracle VPS deployment."
 ---
 
 ## Overview

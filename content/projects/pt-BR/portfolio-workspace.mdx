@@ -30,10 +30,19 @@ tags:
   - "Arquitetura de conteúdo"
   - "Docker"
   - "GitHub Actions"
+techStack:
+  - "Next.js"
+  - "MDX"
+  - "Tailwind CSS"
+  - "Docker"
 summary:
   problem: "Um portfólio precisa ser distinto sem virar um editor falso ou uma vitrine hardcoded."
   solution: "Um shell persistente inspirado em editor lê metadados dos projetos em MDX para atualizar navegação, filtros, páginas e links de deploy com pouca coordenação."
   role: "Design, arquitetura frontend, sistema de conteúdo e arquitetura de deploy"
+outcomes:
+  - "Um arquivo MDX alimenta explorador, arquivo, filtros, paleta de comandos, sitemap e páginas de case."
+  - "Português passa a ser a família de rotas primária, com inglês preservado em /en."
+  - "O deploy modular na VPS permite republicar cada projeto sem reiniciar o stack inteiro do portfólio."
 ---
 
 ## Visão geral

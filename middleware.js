@@ -20,7 +20,7 @@ export function middleware(request) {
   }
 
   const url = request.nextUrl.clone();
-  url.pathname = pathname === "/" ? "/pt-BR" : `/en${pathname}`;
+  url.pathname = pathname === "/" ? "/pt-BR" : `/pt-BR${pathname}`;
   return NextResponse.redirect(url);
 }
 

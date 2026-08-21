@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Github, Menu, PanelLeft, Search } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -31,8 +32,16 @@ export function TitleBar({ title, onCommand, onExplorer, onToggleExplorer, explo
         >
           <PanelLeft size={17} aria-hidden="true" />
         </button>
-        <Link href={localizePath("/", locale)} className="hidden shrink-0 font-mono text-sm font-bold text-accent-300 sm:block">
-          Iago Bussoletti
+        <Link href={localizePath("/", locale)} className="hidden shrink-0 items-center gap-2 font-mono text-sm font-bold text-accent-300 sm:inline-flex" aria-label="Iago Bussoletti home">
+          <Image
+            src="/logo.png"
+            alt=""
+            width={20}
+            height={20}
+            className="h-5 w-5"
+            priority
+          />
+          <span>Iago Bussoletti</span>
         </Link>
         <span className="truncate font-mono text-xs text-ink-300">{title}</span>
       </div>

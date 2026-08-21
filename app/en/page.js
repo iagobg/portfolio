@@ -70,11 +70,28 @@ export default function HomePageEn() {
         <ProjectGrid projects={projects} locale={locale} t={t} />
       </section>
 
-      <section className="rounded border border-workbench-700 bg-workbench-850 p-5">
-        <p className="font-mono text-xs uppercase tracking-wide text-accent-300">{t.nextStep}</p>
-        <p className="mt-2 max-w-3xl text-ink-200">
-          {t.mdxAddCopy}
+      <section className="border border-workbench-700 bg-workbench-850 p-5">
+        <p className="font-mono text-xs uppercase tracking-wide text-accent-300">{t.contactKicker}</p>
+        <h2 className="mt-2 max-w-3xl text-2xl font-bold text-ink-100">{t.contactTitle}</h2>
+        <p className="mt-3 max-w-3xl text-ink-200">
+          {t.contactCopy}
         </p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link
+            href={localizePath("/projects", locale)}
+            className="inline-flex items-center gap-2 rounded bg-accent-400 px-4 py-2 font-mono text-sm font-semibold text-workbench-950 hover:bg-accent-300"
+          >
+            {t.contactPrimary} <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+          <Link
+            href={siteConfig.githubUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded border border-workbench-600 px-4 py-2 font-mono text-sm text-ink-100 hover:border-accent-500 hover:text-accent-300"
+          >
+            <Github size={16} aria-hidden="true" /> {t.contactSecondary}
+          </Link>
+        </div>
       </section>
     </article>
   );

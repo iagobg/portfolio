@@ -18,6 +18,10 @@ export const metadata = {
     template: "%s"
   },
   description: siteConfig.description,
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png"
+  },
   alternates: {
     canonical: absoluteUrl("/pt-BR")
   },
@@ -25,12 +29,21 @@ export const metadata = {
     title: siteConfig.title,
     description: siteConfig.description,
     url: absoluteUrl("/pt-BR"),
-    type: "website"
+    type: "website",
+    images: [
+      {
+        url: absoluteUrl("/logo.png"),
+        width: 500,
+        height: 500,
+        alt: `${siteConfig.name} logo`
+      }
+    ]
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: siteConfig.title,
-    description: siteConfig.description
+    description: siteConfig.description,
+    images: [absoluteUrl("/logo.png")]
   }
 };
 

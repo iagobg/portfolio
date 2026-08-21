@@ -28,10 +28,19 @@ tags:
   - "Busca semântica"
   - "UI renderizada no servidor"
   - "Eventos ao vivo"
+techStack:
+  - "Go"
+  - "Templ"
+  - "HTMX"
+  - "LLM"
 summary:
   problem: "O projeto explora busca semântica e interações ao vivo sem abrir mão de uma arquitetura pequena renderizada no servidor."
   solution: "Go conduz o fluxo backend, Templ mantém views explícitas e embeddings adicionam recuperação por similaridade onde busca textual é limitada."
   role: "Desenvolvimento backend e UI server-rendered"
+outcomes:
+  - "UI renderizada no servidor mantém a arquitetura pequena enquanto suporta atualizações ao vivo focadas."
+  - "O trabalho com embeddings fica isolado do ranking determinístico e do fluxo backend."
+  - "Detalhes públicos permanecem limitados de propósito até que afirmações de produto possam ser verificadas."
 ---
 
 ## Visão geral
