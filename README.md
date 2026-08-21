@@ -1,13 +1,10 @@
 # My Portfolio
 
 Personal portfolio, built with Next.js App Router, JavaScript, Tailwind CSS, and MDX. The interface is inspired by the VS Code workspace: projects behave like files, pages appear as editor tabs, project tags power the archive filters, and the command palette provides fast navigation.
-<<<<<<< HEAD
-=======
 
 Also designed as a hub for all of my projects.
 
 Currently hosted at https://iagobussoletti.com.br
->>>>>>> f46ab469ceb07029afae00f58833fccdc40cb811
 
 ## Run locally
 
