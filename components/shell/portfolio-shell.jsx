@@ -1,16 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
 import { dictionary, getLocaleFromPath, localizePath, stripLocale } from "@/lib/i18n";
 import { routeInfo } from "@/lib/navigation";
 import { ActivityBar } from "@/components/shell/activity-bar";
 import { Breadcrumbs } from "@/components/shell/breadcrumbs";
-import { CommandPalette } from "@/components/shell/command-palette";
 import { EditorTabs } from "@/components/shell/editor-tabs";
 import { Explorer } from "@/components/shell/explorer";
 import { StatusBar } from "@/components/shell/status-bar";
 import { TitleBar } from "@/components/shell/title-bar";
+
+// Search is an on-demand feature. Keeping it out of the app shell's initial
+// chunk means its UI and icon code are only fetched after the user opens it.
+const CommandPalette = dynamic(
+  () => import("@/components/shell/command-palette").then((module) => module.CommandPalette),
+  { ssr: false }
+);
 
 export function PortfolioShell({ projectsByLocale, children }) {
   const pathname = usePathname();
@@ -129,14 +136,16 @@ export function PortfolioShell({ projectsByLocale, children }) {
           </div>
         </div>
       ) : null}
-      <CommandPalette
-        open={paletteOpen}
-        onClose={() => setPaletteOpen(false)}
-        projects={projects}
-        tags={tags}
-        locale={locale}
-        t={t}
-      />
+      {paletteOpen ? (
+        <CommandPalette
+          open
+          onClose={() => setPaletteOpen(false)}
+          projects={projects}
+          tags={tags}
+          locale={locale}
+          t={t}
+        />
+      ) : null}
     </div>
   );
 }
