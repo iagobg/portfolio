@@ -3,15 +3,25 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { Expand, X, ArrowDown } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const ArchitectureDiagram = dynamic(() => import("./architecture-diagram").then((module) => module.ArchitectureDiagram));
 
 export function ProjectPreview({ project, locale }) {
   const pt = locale === "pt-BR";
   const [selected, setSelected] = useState(0);
+  const [mode, setMode] = useState("captures");
   const dialog = useRef(null);
   const screenshots = project.screenshots || [];
   const current = screenshots[selected];
   return (
     <div className="preview-surface">
+      {project.diagram === "live-trivia" && <div className="flex gap-2 border-b border-workbench-700 p-3" role="group" aria-label={pt ? "Conteúdo da prévia" : "Preview content"}>
+        {[["captures", pt ? "Capturas" : "Captures"], ["architecture", pt ? "Arquitetura" : "Architecture"]].map(([id, label]) => (
+          <button key={id} type="button" aria-pressed={mode === id} onClick={() => setMode(id)} className={`min-h-10 rounded px-3 text-sm ${mode === id ? "bg-accent-500/15 text-accent-300" : "text-ink-200 hover:bg-workbench-800"}`}>{label}</button>
+        ))}
+      </div>}
+      {mode === "architecture" && project.diagram === "live-trivia" ? <ArchitectureDiagram locale={locale} /> : <>
       <div className="flex items-center justify-between gap-3 border-b border-workbench-700 px-4 py-3">
         <span className="font-mono text-xs text-accent-300">{current ? (pt ? "Capturas do projeto" : "Project captures") : (pt ? "Fluxo explicado" : "Workflow explained")}</span>
         {current && <button type="button" onClick={() => dialog.current?.showModal()} className="inline-flex min-h-10 items-center gap-2 text-xs text-ink-200 hover:text-accent-300"><Expand size={15} />{pt ? "Ampliar" : "Expand"}</button>}
@@ -49,6 +59,7 @@ export function ProjectPreview({ project, locale }) {
           {!project.flow?.length && <p className="text-sm leading-6 text-ink-200">{project.shortDescription}</p>}
         </div>
       )}
+      </>}
     </div>
   );
 }
