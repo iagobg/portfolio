@@ -7,7 +7,6 @@ year: 2026
 status: "Deployed"
 featured: true
 order: 1
-order: 1
 repositoryUrl: "https://github.com/iagobg/live_trivia"
 liveUrl: "https://livetrivia.iagobussoletti.com.br"
 coverImage: "/projects/live-trivia/logo.png"
@@ -52,110 +51,74 @@ outcomes:
   - "A 16-player synthetic benchmark exercises typing traffic and records browser and server timing."
 ---
 
-## Overview
+## What I wanted to build
 
-Live Trivia is a real-time trivia room application built for session-style games: a host creates a room, loads a JSON quiz, starts the rounds, and players join from their own devices to guess answers as the room updates live.
+I built Live Trivia around a simple interaction: a host runs a quiz while everyone else joins from their own phone. I wanted the room to feel shared, with people seeing each other type and react, while the server kept timing and scoring consistent.
 
-The project began as a Phoenix LiveView app and grew into a full live-event surface: public and password-protected rooms, color reservation, player presence, server-side timers, scheduled hints, closest-guess scoring, a final podium, mobile keyboard handling, and an admin-only synthetic benchmark for testing the stress point of the experience.
+The host can create a room, load a quiz, and control the rounds. Players choose a name and color, submit guesses, receive hints, and follow the scores through to the final podium.
 
-<Decision title="Server owns the game">LiveView and OTP keep quiz state authoritative so players can reconnect, admins can advance rounds, and scoring logic stays in one place.</Decision>
+## Keeping the game in one place
 
-## The problem
+I used Phoenix LiveView for the screens and an OTP process for each room's game state. That gave me one place to handle questions, timers, guesses, scores, and round transitions.
 
-Trivia games are deceptively hard to make feel fair. The interface can be playful, but the timing, scoring, room membership, and winner selection need to be consistent for everyone in the room.
+A detail I had to account for was resetting a round while old timer messages were still waiting to be processed. I attached a round identifier to scheduled work so a stale hint or timeout could not affect the next round.
 
-The main tension was that the most expressive part of the interface was also the most expensive: everyone typing at once. Showing live typing bubbles around an orbital player stage makes the game feel alive, but those updates are too frequent to treat like normal LiveView state.
+<Decision title="The server decides">I kept the game rules on the server. Browser effects can make the room more expressive, but they should not decide whether a guess counts or when a round ends.</Decision>
 
-## Product flow
+I also wanted near misses to mean something. The scoring logic uses Levenshtein distance to classify guesses, and the closest answer can receive consolation points if nobody gets an exact match before time runs out.
 
-The lobby gives hosts a low-friction way to create a room, optionally protect it with a password, and see which rooms are open. Room cards expose the details that matter in the moment: player count, admin presence, whether the room is open, and which phase the game is in.
+## Making the room feel alive
 
-Players join through a focused profile screen with a name field and color picker. The lobby reserves player slots and colors before the player fully enters the room, which prevents the awkward race condition where two players choose the same identity at the same time.
+The typing bubbles were an important part of the experience I was building. They let players see activity around the shared stage instead of waiting silently for a score update.
 
-The host screen is the control room. It combines quiz loading, demo data, round controls, room reset and close actions, live player presence, typing bubbles, scores, and a 16-player synthetic test into one stage-like interface.
+I initially leaned on LiveView for the whole interaction. As the typing behavior grew, I separated two different responsibilities: deciding the game state and showing frequent visual updates.
 
-## Architecture
-
-The app uses Phoenix for the HTTP and websocket layer, LiveView for stateful screens, OTP processes for room state, and PubSub/Presence for real-time coordination.
-
-| Area | Decision |
+| What changes | How I handle it |
 | --- | --- |
-| Framework | Phoenix 1.8 and Phoenix LiveView |
-| Game state | One `LiveTrivia.Game` GenServer per room |
-| Room lifecycle | `LiveTrivia.Lobby` tracks rooms, passwords, player slots, colors, and cleanup |
-| Realtime fanout | Phoenix PubSub broadcasts authoritative game updates |
-| Presence | Phoenix Presence tracks admins, players, and color occupancy |
-| High-frequency input | Phoenix Channels broadcast typing bubbles outside the LiveView diff loop |
-| Persistence | Bounded in-memory rooms for live sessions, no database |
-| Deployment | Docker release image published to GHCR and redeployed by GitHub Actions |
+| Questions, rounds, hints and scores | The room process owns state; PubSub and LiveView distribute and render updates |
+| Players and reserved colors | Phoenix Presence tracks occupancy |
+| Typing bubbles | Phoenix Channels carry frequent text previews outside the LiveView diff loop |
 
-<Callout title="Bounded by design">The current model caps rooms and players per room because the product is aimed at live sessions, not long-lived stored games.</Callout>
+Moving typing traffic to Channels let me work on its payload and update rate without changing the rules of the game.
 
-## Game engine
+## Giving performance work a repeatable target
 
-`LiveTrivia.Game` is the authoritative engine for a room. It owns the current phase, loaded questions, active round, timers, revealed hints, scores, closest guess, and podium state.
+I built an admin-triggered synthetic benchmark so I could exercise the typing path with 16 simulated players instead of relying on a room that merely felt responsive during manual use.
 
-Each round is driven by server timers. Hints are scheduled at fixed offsets, the round has a server-side timeout, and stale timer messages are ignored by carrying a round identifier through the lifecycle. That detail matters because a host can reset or reload a quiz while older scheduled messages are still waiting in the mailbox.
+The benchmark creates a room, loads demo questions, and records browser and server measurements. I can inspect message rate, payload size, handler timing, memory and CPU samples alongside browser latency and DOM timings.
 
-Scoring rewards fast correct answers while still making near misses meaningful. A Levenshtein distance check categorizes guesses as correct, close, near, or far; if nobody answers exactly before the timeout, the closest guess can receive consolation points.
+That gave me a practical way to evaluate client-side throttling and more compact payloads. I moved identifiers toward compact slot-based values and added a binary typing path.
 
-## Realtime UX
+<Decision title="Measure the path being changed">I wanted to compare transport changes without replacing the server-authoritative model. The synthetic room gives me a repeatable workload for that comparison.</Decision>
 
-The first implementation path leaned on LiveView for the whole experience. That worked for authoritative state changes, but typing bubbles revealed a different class of traffic: tiny, frequent, visual updates that do not need to alter the canonical game state.
+I treat those measurements as workload-specific. The host, build and sampling window matter, and a 16-player synthetic room does not establish production capacity.
 
-The later channel-based architecture splits those responsibilities:
+## Designing for the phone keyboard
 
-| Stream | Transport | Purpose |
-| --- | --- | --- |
-| Room and game state | LiveView and PubSub | Phase changes, questions, hints, scores, podium, admin actions |
-| Presence | Phoenix Presence | Player/admin occupancy and color state |
-| Typing bubbles | Phoenix Channels | High-frequency text previews and submitted bubble animations |
+The desktop stage did not translate directly to a narrow screen. I gave the player view a compact roster and mobile-specific bubble positions so the phone still felt connected to the room.
 
-<Decision title="Keep LiveView for decisions, channels for motion">The game stays server-authoritative, but visual typing traffic bypasses LiveView diffs so the stage can stay responsive under load.</Decision>
+The keyboard was another constraint. I used visual-viewport hooks and CSS variables to keep the answer input usable when the keyboard opened, rather than assuming the browser's full height was always available.
 
-## Performance story
+I also reserved colors and player slots during entry. That keeps two people joining at the same time from claiming the same available identity.
 
-The git history shows the project moving through clear pressure points: lobbies and PubSub first, then mobile fixes, then typing overhaul, then benchmarking, payload optimization, binary payloads, and finally deployment hardening.
+## Keeping the scope manageable
 
-The performance work became concrete through an admin-triggered synthetic benchmark. The app can create a benchmark room, connect 16 synthetic players, load the demo quiz, start a round, and measure typing update latency from both browser and server perspectives.
+I chose bounded, in-memory rooms for live sessions rather than adding a database and long-lived game history. The room lifecycle handles creation, passwords, occupancy and cleanup.
 
-Server logs record typing message rate, payload bytes, channel handler timing, BEAM reductions, BEAM memory, process count, run queue, RSS, and CPU samples. Browser-side summaries track average, p50, p95, p99, max, receive, and DOM timings for the typing bubble path.
+| Responsibility | Implementation |
+| --- | --- |
+| Room state | One `LiveTrivia.Game` GenServer per room |
+| Room lifecycle | `LiveTrivia.Lobby` |
+| Shared updates | Phoenix PubSub and Presence |
+| Interface | Phoenix LiveView with browser hooks |
+| Delivery | Docker releases and GitHub Actions |
 
-That feedback loop shaped two major changes: moving input throttling client-side and shrinking typing payloads. Player and room identifiers became compact slot-based values, and the newest channel path supports binary payloads for typing updates.
+For deployment, I used a Docker release image published to GHCR and a targeted Docker Compose redeploy. Updating Live Trivia should not restart the other services sharing the host.
 
-The synthetic room makes transport changes observable through repeatable measurements. Results depend on the host, build, workload, and sampling window; this workload is not a claim of production capacity.
+## What I took away
 
-<Decision title="Measure before changing the model">Transport tuning can be evaluated independently from game correctness, while preserving the server-authoritative architecture.</Decision>
+The most useful distinction I made was between game decisions and visual activity. LiveView remains responsible for the shared interface, while Channels handle the lightweight traffic that makes typing feel immediate.
 
-## Mobile design
+Building the benchmark also changed how I approached optimization. It gave me something specific to compare: bytes sent, work performed, and time spent along the typing path.
 
-The mobile work was not an afterthought. Several history entries are dedicated to phone behavior, especially viewport and keyboard fixes.
-
-On small screens, the orbital desktop layout becomes a compact roster, and typing bubbles are distributed through mobile-specific slots. JavaScript hooks watch the visual viewport, update CSS variables, and keep the player input usable when the phone keyboard opens.
-
-The result is a player screen that still feels connected to the shared stage without forcing the desktop layout into a narrow viewport.
-
-## Deployment
-
-The deployment layer follows the same practical philosophy as the runtime architecture: keep the public app self-contained, keep operational secrets elsewhere, and redeploy only the service that changed.
-
-The Dockerfile builds a production Phoenix release and runs it on port `3070`. The current GitHub Actions workflow builds a Linux ARM64 image on an ARM runner, pushes it to GitHub Container Registry, then SSHes into the Oracle VPS deployment host to pull and recreate only the `live-trivia` service with Docker Compose.
-
-```text
-docker compose -f compose.yml -f projects/live-trivia.compose.yml pull live-trivia
-docker compose -f compose.yml -f projects/live-trivia.compose.yml up -d --no-deps live-trivia
-```
-
-`--no-deps` keeps sibling services stable during a Live Trivia deploy, which matters when the app is one project inside a broader portfolio/server setup.
-
-## Current state
-
-Live Trivia currently supports room creation, optional passwords, color selection, host controls, JSON quiz loading, demo quiz loading, timed rounds, scheduled hints, guess scoring, closest-guess fallback, a podium screen, player/admin presence, channel-driven typing bubbles, mobile viewport handling, benchmark telemetry, Docker releases, and targeted production redeploys.
-
-## Lessons learned
-
-LiveView is excellent at making shared state feel simple, but not every websocket message should become LiveView state. The strongest version of this app came from separating authority from ambience: the server decides the game, while channels carry the lightweight motion that makes the room feel alive.
-
-The project also made performance visible instead of theoretical. Once the synthetic room existed, optimization work had a target: fewer bytes, less unnecessary rendering, clearer latency numbers, and a repeatable way to compare transport changes.
-
-The final shape is intentionally modest in storage and scope, but ambitious where the user feels it: a host can run a room, players can join from phones, and the whole game has the immediacy of people typing and reacting together in the same place.
+Live Trivia is deployed, with host controls, phone participation, timed rounds, hints, scoring and a final podium. Its scope is deliberately focused on a live session. The part I care most about is how those pieces come together: one host can run the room while players see the game—and each other—respond.

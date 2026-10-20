@@ -7,7 +7,6 @@ year: 2026
 status: "Publicado"
 featured: true
 order: 1
-order: 1
 repositoryUrl: "https://github.com/iagobg/live_trivia"
 liveUrl: "https://livetrivia.iagobussoletti.com.br"
 coverImage: "/projects/live-trivia/logo.png"
@@ -54,110 +53,74 @@ outcomes:
   - "Um benchmark sintético com 16 jogadores exercita a digitação e registra tempos no navegador e no servidor."
 ---
 
-## Visão geral
+## O que eu queria construir
 
-Live Trivia é uma aplicação de sala de trivia em tempo real criada para sessões de jogo: um host cria uma sala, carrega um quiz em JSON, inicia as rodadas, e jogadores entram pelos próprios dispositivos para tentar adivinhar respostas enquanto a sala atualiza ao vivo.
+Construí o Live Trivia em torno de uma interação simples: um host conduz um quiz enquanto as outras pessoas entram pelo celular. Eu queria que a sala parecesse compartilhada, com todos vendo os outros digitar e reagir, enquanto o servidor mantinha o tempo e a pontuação consistentes.
 
-O projeto começou como uma aplicação Phoenix LiveView e cresceu para uma superfície completa de evento ao vivo: salas públicas e protegidas por senha, reserva de cores, presença de jogadores, temporizadores no servidor, dicas agendadas, pontuação por chute mais próximo, pódio final, tratamento de teclado mobile e um benchmark sintético exclusivo para admins para testar o ponto de pressão da experiência.
+O host cria uma sala, carrega um quiz e controla as rodadas. Os jogadores escolhem nome e cor, enviam palpites, recebem dicas e acompanham o placar até o pódio final.
 
-<Decision title="O servidor é dono do jogo">LiveView e OTP mantêm o estado do quiz autoritativo para que jogadores possam reconectar, admins possam avançar rodadas e a lógica de pontuação fique em um só lugar.</Decision>
+## Mantendo o jogo em um só lugar
 
-## O problema
+Usei Phoenix LiveView para as telas e um processo OTP para o estado de cada sala. Isso me deu um lugar central para tratar perguntas, temporizadores, palpites, pontuações e transições de rodada.
 
-Jogos de trivia são enganosamente difíceis de fazer parecer justos. A interface pode ser divertida, mas tempo, pontuação, participação na sala e escolha do vencedor precisam ser consistentes para todos.
+Um detalhe que precisei considerar foi o reset de uma rodada enquanto mensagens antigas de timer ainda esperavam processamento. Associei um identificador de rodada ao trabalho agendado para que uma dica ou timeout antigo não interferisse na rodada seguinte.
 
-A principal tensão era que a parte mais expressiva da interface também era a mais cara: todo mundo digitando ao mesmo tempo. Mostrar balões de digitação ao vivo em volta de um palco orbital de jogadores deixa o jogo vivo, mas essas atualizações são frequentes demais para serem tratadas como estado normal do LiveView.
+<Decision title="O servidor decide">Mantive as regras no servidor. Efeitos no navegador podem tornar a sala mais expressiva, mas não devem decidir se um palpite vale ou quando uma rodada termina.</Decision>
 
-## Fluxo do produto
+Também queria dar valor aos quase-acertos. A lógica usa distância de Levenshtein para classificar palpites, e a resposta mais próxima pode receber pontos de consolação quando ninguém acerta antes do fim do tempo.
 
-O lobby dá aos hosts um caminho rápido para criar uma sala, protegê-la opcionalmente com senha e ver quais salas estão abertas. Os cards de sala mostram os detalhes que importam no momento: número de jogadores, presença do admin, se a sala está aberta e em qual fase o jogo está.
+## Fazendo a sala parecer viva
 
-Jogadores entram por uma tela focada de perfil, com campo de nome e seletor de cor. O lobby reserva vagas e cores antes de o jogador entrar completamente na sala, evitando a corrida estranha em que duas pessoas escolhem a mesma identidade ao mesmo tempo.
+Os balões de digitação eram uma parte importante da experiência que eu estava construindo. Eles permitem perceber atividade em volta do palco compartilhado, em vez de apenas esperar por uma atualização do placar.
 
-A tela do host é a sala de controle. Ela combina carregamento de quiz, dados de demonstração, controles de rodada, reset e fechamento da sala, presença ao vivo, balões de digitação, pontuações e um teste sintético com 16 jogadores em uma interface com cara de palco.
+Inicialmente, usei LiveView para toda a interação. Conforme a digitação ganhou mais comportamento, separei duas responsabilidades: decidir o estado do jogo e mostrar atualizações visuais frequentes.
 
-## Arquitetura
-
-A aplicação usa Phoenix para a camada HTTP e websocket, LiveView para telas com estado, processos OTP para estado da sala e PubSub/Presence para coordenação em tempo real.
-
-| Área | Decisão |
+| O que muda | Como tratei |
 | --- | --- |
-| Framework | Phoenix 1.8 e Phoenix LiveView |
-| Estado do jogo | Um GenServer `LiveTrivia.Game` por sala |
-| Ciclo de vida da sala | `LiveTrivia.Lobby` acompanha salas, senhas, vagas de jogadores, cores e limpeza |
-| Fanout em tempo real | Phoenix PubSub transmite atualizações autoritativas do jogo |
-| Presence | Phoenix Presence acompanha admins, jogadores e ocupação de cores |
-| Entrada de alta frequência | Phoenix Channels transmite balões de digitação fora do ciclo de diffs do LiveView |
-| Persistência | Salas em memória com limites para sessões ao vivo, sem banco de dados |
-| Deploy | Imagem Docker de release publicada no GHCR e republicada por GitHub Actions |
+| Perguntas, rodadas, dicas e placar | O processo da sala controla o estado; PubSub e LiveView distribuem e renderizam atualizações |
+| Jogadores e cores reservadas | Phoenix Presence acompanha a ocupação |
+| Balões de digitação | Phoenix Channels transporta previews frequentes fora do ciclo de diffs do LiveView |
 
-<Callout title="Limitado por design">O modelo atual limita salas e jogadores por sala porque o produto é voltado para sessões ao vivo, não para jogos armazenados de longa duração.</Callout>
+Mover esse tráfego para Channels permitiu trabalhar no payload e na frequência de atualização sem mudar as regras do jogo.
 
-## Motor do jogo
+## Dando um alvo repetível à otimização
 
-`LiveTrivia.Game` é o motor autoritativo de uma sala. Ele controla a fase atual, perguntas carregadas, rodada ativa, temporizadores, dicas reveladas, pontuações, chute mais próximo e estado do pódio.
+Criei um benchmark sintético acionado pelo admin para exercitar a digitação com 16 jogadores simulados, sem depender apenas da impressão de responsividade durante o uso manual.
 
-Cada rodada é conduzida por temporizadores no servidor. Dicas são agendadas em offsets fixos, a rodada tem timeout do lado do servidor, e mensagens antigas de timer são ignoradas carregando um identificador de rodada pelo ciclo de vida. Esse detalhe importa porque um host pode resetar ou recarregar um quiz enquanto mensagens agendadas antigas ainda estão esperando na mailbox.
+O benchmark cria uma sala, carrega perguntas de demonstração e registra medições do navegador e do servidor. Consigo observar taxa de mensagens, tamanho de payload, tempo dos handlers, memória e amostras de CPU junto com latência e tempos de DOM.
 
-A pontuação recompensa respostas corretas rápidas sem deixar quase-acertos sem sentido. Uma checagem de distância de Levenshtein categoriza palpites como corretos, próximos, quase ou distantes; se ninguém responder exatamente antes do timeout, o chute mais próximo pode receber pontos de consolação.
+Isso me deu uma forma prática de avaliar throttle no cliente e payloads menores. Passei a usar identificadores compactos baseados em slots e adicionei um caminho binário para digitação.
 
-## UX em tempo real
+<Decision title="Medir o caminho que estou alterando">Eu queria comparar mudanças de transporte sem substituir o modelo autoritativo no servidor. A sala sintética oferece uma carga repetível para essa comparação.</Decision>
 
-O primeiro caminho de implementação usava LiveView para toda a experiência. Isso funcionou para mudanças de estado autoritativas, mas os balões de digitação revelaram outra classe de tráfego: atualizações pequenas, frequentes e visuais que não precisam alterar o estado canônico do jogo.
+Trato essas medições como específicas da carga. Host, build e janela de amostragem importam, e uma sala sintética com 16 jogadores não estabelece capacidade em produção.
 
-A arquitetura posterior baseada em channels separa essas responsabilidades:
+## Projetando para o teclado do celular
 
-| Fluxo | Transporte | Propósito |
-| --- | --- | --- |
-| Estado da sala e do jogo | LiveView e PubSub | Mudanças de fase, perguntas, dicas, pontuações, pódio e ações de admin |
-| Presence | Phoenix Presence | Ocupação de jogadores/admins e estado de cores |
-| Balões de digitação | Phoenix Channels | Previews de texto de alta frequência e animações de balões enviados |
+O palco de desktop não se traduzia diretamente para uma tela estreita. Dei à visão do jogador uma lista compacta e posições de balão específicas para mobile, mantendo a sensação de conexão com a sala.
 
-<Decision title="LiveView para decisões, channels para movimento">O jogo continua autoritativo no servidor, mas o tráfego visual de digitação evita os diffs do LiveView para manter o palco responsivo sob carga.</Decision>
+O teclado era outra restrição. Usei hooks do visual viewport e variáveis CSS para manter o campo de resposta utilizável quando ele abre, em vez de assumir que toda a altura do navegador está disponível.
 
-## História de performance
+Também reservei cores e vagas durante a entrada. Isso evita que duas pessoas entrando ao mesmo tempo escolham a mesma identidade disponível.
 
-O histórico do Git mostra o projeto passando por pontos de pressão claros: lobbies e PubSub primeiro, depois ajustes mobile, reformulação da digitação, benchmarking, otimização de payloads, payloads binários e, por fim, endurecimento do deploy.
+## Mantendo um escopo viável
 
-O trabalho de performance ficou concreto por meio de um benchmark sintético acionado pelo admin. A aplicação consegue criar uma sala de benchmark, conectar 16 jogadores sintéticos, carregar o quiz demo, iniciar uma rodada e medir a latência das atualizações de digitação tanto pelo navegador quanto pelo servidor.
+Escolhi salas limitadas em memória para sessões ao vivo, sem acrescentar um banco de dados e histórico permanente de partidas. O ciclo de vida da sala trata criação, senhas, ocupação e limpeza.
 
-Os logs do servidor registram taxa de mensagens de digitação, bytes de payload, tempo do handler do channel, reductions da BEAM, memória da BEAM, contagem de processos, run queue, RSS e amostras de CPU. Os resumos no navegador acompanham média, p50, p95, p99, máximo, recebimento e tempos de DOM no caminho dos balões de digitação.
+| Responsabilidade | Implementação |
+| --- | --- |
+| Estado da sala | Um GenServer `LiveTrivia.Game` por sala |
+| Ciclo de vida | `LiveTrivia.Lobby` |
+| Atualizações compartilhadas | Phoenix PubSub e Presence |
+| Interface | Phoenix LiveView com hooks no navegador |
+| Entrega | Releases Docker e GitHub Actions |
 
-Esse ciclo de feedback moldou duas mudanças grandes: mover o throttle da entrada para o cliente e reduzir os payloads de digitação. Identificadores de jogador e sala viraram valores compactos baseados em slots, e o caminho mais recente de channel suporta payloads binários para atualizações de digitação.
+No deploy, usei uma imagem Docker publicada no GHCR e um redeploy direcionado pelo Docker Compose. Atualizar o Live Trivia não deve reiniciar os outros serviços que compartilham o host.
 
-A sala sintética torna mudanças de transporte observáveis por medições repetíveis. Os resultados dependem do host, build, carga e janela de amostragem; essa carga não representa uma garantia de capacidade em produção.
+## O que aprendi
 
-<Decision title="Medir antes de trocar o modelo">Ajustes de transporte podem ser avaliados separadamente da correção das regras, preservando a arquitetura autoritativa no servidor.</Decision>
+A distinção mais útil foi entre decisões do jogo e atividade visual. LiveView continua responsável pela interface compartilhada, enquanto Channels trata o tráfego leve que dá imediaticidade à digitação.
 
-## Design mobile
+Construir o benchmark também mudou como abordei a otimização. Passei a ter algo específico para comparar: bytes enviados, trabalho realizado e tempo gasto no caminho da digitação.
 
-O trabalho mobile não foi um detalhe de última hora. Várias entradas do histórico são dedicadas ao comportamento em celular, especialmente correções de viewport e teclado.
-
-Em telas pequenas, o layout orbital de desktop vira uma lista compacta, e os balões de digitação são distribuídos em slots específicos para mobile. Hooks JavaScript observam o visual viewport, atualizam variáveis CSS e mantêm a entrada do jogador usável quando o teclado do celular abre.
-
-O resultado é uma tela de jogador que ainda parece conectada ao palco compartilhado sem forçar o layout de desktop em uma viewport estreita.
-
-## Deploy
-
-A camada de deploy segue a mesma filosofia prática da arquitetura de runtime: manter a aplicação pública autocontida, deixar segredos operacionais em outro lugar e republicar apenas o serviço que mudou.
-
-O Dockerfile cria um release Phoenix de produção e roda na porta `3070`. O workflow atual do GitHub Actions constrói uma imagem Linux ARM64 em runner ARM, publica no GitHub Container Registry e depois acessa por SSH o host de deploy na VPS da Oracle para puxar e recriar somente o serviço `live-trivia` com Docker Compose.
-
-```text
-docker compose -f compose.yml -f projects/live-trivia.compose.yml pull live-trivia
-docker compose -f compose.yml -f projects/live-trivia.compose.yml up -d --no-deps live-trivia
-```
-
-`--no-deps` mantém serviços irmãos estáveis durante um deploy do Live Trivia, o que importa quando a aplicação é um projeto dentro de um setup maior de portfólio/servidor.
-
-## Estado atual
-
-Live Trivia atualmente suporta criação de sala, senhas opcionais, seleção de cor, controles de host, carregamento de quiz em JSON, carregamento de quiz demo, rodadas temporizadas, dicas agendadas, pontuação de palpites, fallback para chute mais próximo, tela de pódio, presença de jogadores/admins, balões de digitação via channels, tratamento de viewport mobile, telemetria de benchmark, releases Docker e redeploys direcionados em produção.
-
-## Aprendizados
-
-LiveView é excelente para fazer estado compartilhado parecer simples, mas nem toda mensagem de websocket deve virar estado do LiveView. A versão mais forte desta aplicação veio de separar autoridade de ambientação: o servidor decide o jogo, enquanto channels carregam o movimento leve que faz a sala parecer viva.
-
-O projeto também tornou performance visível em vez de teórica. Depois que a sala sintética existiu, a otimização ganhou um alvo: menos bytes, menos renderização desnecessária, números de latência mais claros e uma forma repetível de comparar mudanças de transporte.
-
-O formato final é intencionalmente modesto em armazenamento e escopo, mas ambicioso onde o usuário sente: um host consegue conduzir uma sala, jogadores entram pelo celular, e o jogo inteiro tem a imediaticidade de pessoas digitando e reagindo juntas no mesmo lugar.
+O Live Trivia está publicado, com controles de host, participação pelo celular, rodadas temporizadas, dicas, pontuação e pódio. O escopo é focado em uma sessão ao vivo. O que mais me interessa é como essas partes se conectam: uma pessoa conduz a sala enquanto os jogadores veem o jogo — e uns aos outros — responder.
