@@ -1,0 +1,69 @@
+---
+slug: "futemon"
+fileName: "futemon.mdx"
+title: "Futemon"
+shortDescription: "Monte um time de futsal com Pokémon, gere uma partida narrada e assista ao replay."
+year: 2026
+status: "Protótipo"
+featured: true
+order: 4
+repositoryUrl: ""
+liveUrl: ""
+tags:
+  - "Go"
+  - "HTMX"
+  - "SQLite"
+  - "Structured generation"
+  - "Replay"
+techStack:
+  - "Go"
+  - "HTMX"
+  - "SQLite"
+  - "OpenRouter"
+summary:
+  problem: "Eventos gerados precisam virar uma experiência consistente, com times persistentes, histórico e um relógio compartilhado."
+  solution: "Validar eventos estruturados no servidor, derivar o placar desses eventos e renderizar uma transmissão com replay."
+  role: "Arquitetura da aplicação, backend Go, regras dos times, integração com IA e reprodução das partidas"
+outcomes:
+  - "Eventos estruturados são normalizados e validados antes da apresentação."
+  - "Snapshots dos times e regras de transferência preservam o histórico."
+  - "Âncoras de tempo do servidor sustentam narração sincronizada e replay."
+---
+
+## Uma partida que vale acompanhar
+
+Futemon parte de uma pergunta divertida: como seria uma partida de futsal entre times de Pokémon? O jogador monta uma formação, escolhe um adversário e acompanha uma partida narrada cujos eventos são revelados ao longo do tempo.
+
+O desafio técnico está entre geração e apresentação. Uma resposta JSON ainda não é uma experiência de jogo. Ela precisa de times reconhecíveis, referências válidas, um placar coerente e uma linha do tempo que possa ser reproduzida novamente.
+
+## Transformando geração em aplicação
+
+O backend Go monta o contexto do confronto a partir de atributos, posições e efetividade de tipos. Esse contexto alimenta uma solicitação ao OpenRouter para gerar eventos estruturados. A resposta é interpretada, normalizada e validada antes de virar um registro de partida.
+
+<Decision title="Um limite explícito">O modelo gera eventos. A aplicação resolve referências de times e jogadores, deriva o placar dos gols e controla a apresentação. É um experimento com partidas geradas, não uma simulação esportiva determinística.</Decision>
+
+Um gerador local de exemplo permite desenvolver sem chamar um modelo externo. Esse caminho reproduz uma amostra, não comprova uma nova geração por IA. Falhas do provedor podem ser exibidas ou direcionadas a um fallback configurado explicitamente.
+
+## A transmissão tem seu próprio relógio
+
+Exibir o resultado final de imediato eliminaria o suspense. O renderizador atribui duração à narração, às pausas de gol, ao intervalo e ao avanço do relógio. A revelação do placar acompanha os eventos.
+
+O navegador anima a partir de âncoras temporais do servidor e faz sincronizações periódicas. O replay desloca essas âncoras para um novo início. Os testes cobrem o tempo das revelações, o relógio parado durante a narração e a atualização do placar ao final do evento de gol.
+
+## Regras que sobrevivem à próxima requisição
+
+SQLite armazena times e histórico. Snapshots preservam a formação que disputou uma partida, mesmo que o time mude depois. Uma transferência semanal pode trocar apenas um Pokémon; times aposentados saem das listas competitivas, mas continuam no histórico.
+
+A persistência faz parte do design do produto. O sistema precisa lembrar como o time era quando jogou, não apenas sua formação atual.
+
+## O que o protótipo demonstra
+
+O projeto combina templates HTML de Go e HTMX com uma camada pequena de reprodução no navegador. Contas, limites de geração e armazenamento de chaves fornecidas pelo usuário dão suporte ao fluxo.
+
+Os testes existentes exercitam validação de times, persistência, respostas estruturadas, fallback e tempo da narração. Isso documenta o desenvolvimento, sem representar uma certificação de produção ou de qualidade do modelo.
+
+## Limites e próximos passos
+
+<Limitation title="Protótipo">A interface e o fluxo mais amplo do produto estão incompletos. A qualidade depende do modelo e do prompt, e os eventos gerados não representam resultados esportivos verificados.</Limitation>
+
+O próximo passo mais útil é demonstrar o fluxo completo e avaliar partidas malformadas ou inconsistentes. Mostrar essa jornada com clareza vale mais do que completar todos os modos de jogo planejados.

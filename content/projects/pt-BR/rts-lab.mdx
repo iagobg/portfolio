@@ -1,0 +1,76 @@
+---
+slug: "rts-lab"
+fileName: "rts-lab.mdx"
+title: "RTS Lab"
+shortDescription: "Um laboratório de combate para movimento determinístico, interações físicas e performance medida."
+year: 2026
+status: "Protótipo"
+featured: true
+order: 2
+repositoryUrl: ""
+liveUrl: ""
+coverImage: "/projects/rts-lab/terrain-action.png"
+screenshots:
+  - src: "/projects/rts-lab/terrain-action.png"
+    alt: "Terreno e formações do RTS Lab com overlays de diagnóstico"
+    caption: "Captura histórica do build inspecionado. O FPS exibido não é um benchmark atual."
+tags:
+  - "Zig"
+  - "Simulation"
+  - "Determinism"
+  - "Performance"
+  - "Physics"
+techStack:
+  - "Zig"
+  - "raylib"
+  - "Integer simulation"
+  - "Replay verification"
+summary:
+  problem: "Grupos de unidades precisam obedecer a ordens e interagir fisicamente sem encarecer cada frame nem mudar de comportamento a cada otimização."
+  solution: "Separar estado em ticks fixos da renderização, comparar hashes de replay e medir cenas controladas antes de otimizar."
+  role: "Arquitetura da simulação, experimentos de movimento e combate, verificação de replay e profiling"
+outcomes:
+  - "Simulação e apresentação são separadas; efeitos visuais não decidem o combate."
+  - "Ferramentas de replay comparam ticks entre processos e modos de build."
+  - "A mediana registrada da cena densa caiu de 5,331 ms para 1,487 ms em ReleaseSafe."
+---
+
+## Um laboratório, não um RTS completo
+
+RTS Lab explora como grupos de unidades se movem, colidem, lutam e interagem com o terreno. As formas geométricas tornam esses comportamentos visíveis sem depender de arte, economia ou campanha.
+
+O laboratório contém 150 unidades divididas entre dois jogadores locais. Tetraedros, cubos e dodecaedros têm massas, velocidades e papéis de combate diferentes.
+
+## Tornar o estado reproduzível
+
+Comandos entram em uma simulação de ticks fixos com validação de dono e sequência. Estado inteiro e ordem estável de processamento permitem comparar replays. A renderização consome estado e eventos visuais sem interferir nas decisões de combate.
+
+<Decision title="Correção antes de velocidade">As ferramentas comparam hashes de ticks entre processos independentes e builds Debug, ReleaseSafe e ReleaseFast. Uma otimização deve mudar o custo, sem alterar silenciosamente a batalha.</Decision>
+
+O dano é acumulado antes de ser aplicado, permitindo mortes simultâneas em vez de favorecer unidades processadas primeiro.
+
+## Movimento é um problema físico
+
+As unidades se movem por forças, gravidade, momento e correção de contato. Inclinações afetam a aceleração; descidas podem superar a velocidade de cruzeiro, enquanto sair de um platô produz queda e dano de impacto.
+
+Ordens de grupo acrescentam outra camada. Coortes precisam avançar juntas por pontos intermediários, e parar é diferente de aplicar força para manter uma posição. Grupos densos ainda podem se empurrar ou travar no destino.
+
+## Medir o frame inteiro
+
+Uma investigação registrada identificou que reconstruir terreno estático com chamadas imediatas dominava a submissão de desenho na CPU. O cache de meshes tirou esse trabalho repetitivo do loop. Cálculos inteiros de distância e rejeição de colisões também foram otimizados.
+
+Na cena densa registrada, a mediana em ReleaseSafe passou de **5,331 ms para 1,487 ms**. O perfil foi coletado no Windows em 27 de setembro de 2026, com RTX 3060 Ti: 600 frames sem limite, os primeiros 60 descartados e exatamente um tick por frame.
+
+São medições históricas de uma carga de 150 unidades, não resultados novos nem garantia para exércitos maiores. O jogo normal permanece limitado a 60 FPS.
+
+## Experimentos que não venceram em tudo
+
+A investigação de desvio comparou steering, movimento apenas com colisão e correção de contato. Algumas variantes atravessaram grupos mais rápido, mas introduziram sobreposição ou deslocamento excessivo. Outras pararam de oscilar porque pararam de se mover.
+
+O resultado útil foi um tradeoff. Um grupo travado não é uma solução eficiente bem-sucedida, e mover mais rápido não significa mover corretamente.
+
+## Limites do protótipo
+
+<Limitation title="Escopo conhecido">O protótipo inspecionado não possui IA adversária, rede ou neblina de guerra. O solver de colisão ainda percorre pares quadraticamente. As capturas existentes mostram builds de diagnóstico, não um jogo finalizado ou uma medição atual.</Limitation>
+
+O próximo caminho técnico é uma broad phase determinística e demonstrações mais claras do movimento em grupo. Um jogo completo seria outro escopo de produto.

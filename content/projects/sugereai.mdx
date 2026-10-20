@@ -1,0 +1,75 @@
+---
+slug: "sugereai"
+fileName: "sugereai.mdx"
+title: "SugereAI"
+shortDescription: "Turn everyday needs into editable criteria and explainable laptop recommendations."
+year: 2026
+status: "Prototype"
+featured: true
+order: 3
+repositoryUrl: ""
+liveUrl: ""
+tags:
+  - "TypeScript"
+  - "React"
+  - "PostgreSQL"
+  - "Recommendation engine"
+  - "Data ingestion"
+techStack:
+  - "React"
+  - "Vite"
+  - "TypeScript"
+  - "Express"
+  - "PostgreSQL"
+  - "Gemini"
+summary:
+  problem: "People can describe their routine more easily than they can compare hardware, while marketplace specifications are often incomplete or inconsistent."
+  solution: "Use AI to interpret intent, let the user revise it, then rank existing product records with local rules."
+  role: "Full-stack implementation, criteria refinement, heuristic ranking and marketplace data integration"
+outcomes:
+  - "Users can inspect and adjust criteria before ranking products."
+  - "Local heuristics select products; AI can enrich explanations afterward."
+  - "Mapping regressions distinguish installed RAM from storage and upgrade capacity."
+---
+
+## From a routine to a shortlist
+
+“I need a laptop for college, travel, and spreadsheets” is a useful description of a person's needs, but not a database query. SugereAI bridges that gap through three stages: describe the routine, refine the interpreted requirements, and compare a short list of laptops.
+
+The project is a working vertical slice focused on one category. Its value is in making the recommendation process inspectable rather than hiding it behind a chat response.
+
+## Let people correct the interpretation
+
+Gemini converts a free-text request into structured criteria. The server normalizes those values and can use local interpretation rules when the external service fails.
+
+Before ranking, the interface exposes budget, memory, operating system, and priorities such as battery, performance, and portability. Contextual controls address gaming, mobility, and creative work.
+
+<Decision title="Interpretation is editable">The first model response is a starting point. The user can change its assumptions before those assumptions affect the recommendation.</Decision>
+
+## Keep selection in the application
+
+The ranking engine evaluates existing product records with local heuristics. It combines budget fit and estimated hardware characteristics, with adjustments for the intended workload. The model can enrich the explanation after selection; it does not supply a new product list.
+
+This separation makes the ranking rules inspectable and repeatable for a fixed dataset and criteria. It also makes their limitations visible: a heuristic fit score is not a probability of satisfaction.
+
+## Real catalog data is messy
+
+The Mercado Livre import path combines catalog information and offers, maps specifications, and persists records through a repository supporting PostgreSQL. Product availability and price affect which records can be recommended.
+
+One concrete problem was RAM extraction. A listing may confuse installed memory with maximum supported memory, or put the SSD capacity in a memory attribute. Mapping tests cover these cases using the title and attributes together.
+
+That work matters as much as prompt design. A fluent explanation cannot repair a product record that mistakes 512 GB of storage for RAM.
+
+## When there is no exact match
+
+The current engine relaxes some constraints when fewer than three strict candidates exist. This can include over-budget alternatives; OS matching and missing specifications also remain approximate.
+
+<Limitation title="Estimated fit">Compatibility percentages are heuristic scores. Relaxed constraints and estimated specifications should be exposed clearly, not interpreted as guarantees that a product meets every requirement.</Limitation>
+
+The recommendation script prints representative scenarios for inspection. Mapping tests contain explicit assertions; a stronger ranking evaluation suite is still a useful next step.
+
+## What I would improve next
+
+Preserve edited criteria when adjusting a search, surface request failures in the interface, and separate exact matches from alternatives. A reproducible catalog snapshot would also make demonstrations independent of changing prices and availability.
+
+The prototype runs on Windows with React, Vite, TypeScript, Express, PostgreSQL, and Gemini. Broader categories, feedback-driven ranking, and monetization remain future work.

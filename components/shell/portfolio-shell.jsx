@@ -1,5 +1,6 @@
 "use client";
 
+import { canonicalProjectSlug } from "@/lib/project-aliases.mjs";
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
@@ -57,7 +58,7 @@ export function PortfolioShell({ projectsByLocale, children }) {
       const saved = window.localStorage.getItem("portfolio:open-project-tabs");
       const slugs = saved ? JSON.parse(saved) : [];
       if (Array.isArray(slugs)) {
-        setOpenProjectSlugs([...new Set(slugs.filter((slug) => typeof slug === "string"))]);
+        setOpenProjectSlugs([...new Set(slugs.filter((slug) => typeof slug === "string").map(canonicalProjectSlug))]);
       }
     } catch {
       setOpenProjectSlugs([]);

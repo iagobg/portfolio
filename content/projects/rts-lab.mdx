@@ -1,0 +1,76 @@
+---
+slug: "rts-lab"
+fileName: "rts-lab.mdx"
+title: "RTS Lab"
+shortDescription: "A combat laboratory for deterministic movement, physical interactions, and measured rendering performance."
+year: 2026
+status: "Prototype"
+featured: true
+order: 2
+repositoryUrl: ""
+liveUrl: ""
+coverImage: "/projects/rts-lab/terrain-action.png"
+screenshots:
+  - src: "/projects/rts-lab/terrain-action.png"
+    alt: "RTS Lab terrain and unit formations with diagnostic overlays"
+    caption: "Historical diagnostic capture from the inspected build. The displayed FPS is not a current benchmark."
+tags:
+  - "Zig"
+  - "Simulation"
+  - "Determinism"
+  - "Performance"
+  - "Physics"
+techStack:
+  - "Zig"
+  - "raylib"
+  - "Integer simulation"
+  - "Replay verification"
+summary:
+  problem: "Crowds of units need consistent orders and physical interactions without making every frame expensive or every optimization change the simulation."
+  solution: "Separate fixed-tick state from rendering, compare replay hashes, and profile controlled scenes before optimizing."
+  role: "Simulation architecture, movement and combat experiments, replay verification and profiling"
+outcomes:
+  - "Simulation and presentation are separate; visual events do not decide combat."
+  - "Replay tooling compares committed ticks across processes and build modes."
+  - "Recorded dense-scene median frame time fell from 5.331 ms to 1.487 ms in ReleaseSafe."
+---
+
+## A laboratory, not a finished RTS
+
+RTS Lab is a focused experiment in how groups of units move, collide, fight, and interact with terrain. Its geometric units make those behaviors visible without requiring a full game's art, economy, or campaign.
+
+The laboratory contains 150 units split between two local players. Tetrahedra, cubes, and dodecahedra have different masses, speeds, and combat roles.
+
+## Make state reproducible
+
+Commands enter a fixed-tick simulation with ownership and sequence validation. Integer state and stable processing order make replay comparison possible. Rendering consumes state and visual events without feeding presentation decisions back into combat.
+
+<Decision title="Correctness before speed">The replay tooling compares committed tick hashes across independent processes and Debug, ReleaseSafe, and ReleaseFast builds. An optimization should change cost, not silently change the battle.</Decision>
+
+Damage is accumulated before it is committed, allowing mutual kills rather than giving lower-index attackers an accidental advantage.
+
+## Movement is a physical problem
+
+Units move through forces, gravity, momentum, and contact correction. Slopes affect acceleration; downhill movement can exceed cruise speed, while leaving a terrace introduces falling and impact damage.
+
+Group orders add another layer. Cohorts need to advance through queued waypoints together, and “Stop” is different from applying force to hold a position. Dense crowds can still jostle or stall at their destination.
+
+## Measure the whole frame
+
+A recorded investigation found that rebuilding static terrain through immediate drawing calls dominated CPU drawing submission. Caching terrain meshes moved that repeated work out of the frame loop. Integer distance calculations and collision rejection were also optimized.
+
+For the recorded dense scene, ReleaseSafe median frame time moved from **5.331 ms to 1.487 ms**. This was a September 27, 2026 Windows profile using an RTX 3060 Ti: 600 uncapped frames, the first 60 discarded, and exactly one simulation tick per frame.
+
+These are historical measurements of a specific 150-unit workload, not fresh results or a guarantee for larger armies. Normal gameplay remains capped at 60 FPS.
+
+## Experiments that did not simply win
+
+The avoidance investigation compared steering, collision-only movement, and contact correction. Some variants crossed crowds faster but introduced overlaps or excessive displacement. Others stopped oscillating because they stopped moving.
+
+The useful result was a tradeoff, not a universally better algorithm. A stalled crowd is not a successful low-cost solution, and faster movement is not automatically correct movement.
+
+## Boundaries of the prototype
+
+<Limitation title="Known scope">There is no opponent AI, networking, or fog of war in the inspected prototype. The collision solver still scans pairs quadratically. Existing captures show diagnostic builds, not a polished game or current performance measurement.</Limitation>
+
+The next engineering direction is a deterministic broad phase and clearer demonstrations of constrained crowd movement. A full game would be a separate product scope.

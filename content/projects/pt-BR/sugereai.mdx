@@ -1,0 +1,75 @@
+---
+slug: "sugereai"
+fileName: "sugereai.mdx"
+title: "SugereAI"
+shortDescription: "Transforme necessidades do dia a dia em critérios editáveis e recomendações explicáveis de notebooks."
+year: 2026
+status: "Protótipo"
+featured: true
+order: 3
+repositoryUrl: ""
+liveUrl: ""
+tags:
+  - "TypeScript"
+  - "React"
+  - "PostgreSQL"
+  - "Recommendation engine"
+  - "Data ingestion"
+techStack:
+  - "React"
+  - "Vite"
+  - "TypeScript"
+  - "Express"
+  - "PostgreSQL"
+  - "Gemini"
+summary:
+  problem: "É mais fácil descrever uma rotina do que comparar hardware, enquanto especificações de anúncios podem estar incompletas ou inconsistentes."
+  solution: "Usar IA para interpretar a intenção, permitir revisão pelo usuário e ranquear produtos existentes com regras locais."
+  role: "Implementação full-stack, refinamento de critérios, ranking heurístico e integração de dados do marketplace"
+outcomes:
+  - "O usuário revisa e ajusta os critérios antes do ranking."
+  - "Heurísticas locais selecionam produtos; a IA pode enriquecer as explicações."
+  - "Testes de mapeamento distinguem RAM instalada, armazenamento e capacidade de expansão."
+---
+
+## Da rotina a uma lista de opções
+
+“Preciso de um notebook para faculdade, viagens e planilhas” descreve uma necessidade, mas não é uma consulta ao banco. SugereAI conecta essas duas coisas em três etapas: descrever a rotina, refinar requisitos e comparar uma lista curta de notebooks.
+
+O projeto é uma fatia vertical voltada a uma categoria. Seu valor está em tornar o processo de recomendação inspecionável, em vez de escondê-lo em uma resposta de chat.
+
+## Permitir que a pessoa corrija a interpretação
+
+Gemini converte o pedido em critérios estruturados. O servidor normaliza esses valores e pode usar regras locais de interpretação quando o serviço externo falha.
+
+Antes do ranking, a interface expõe orçamento, memória, sistema operacional e prioridades de bateria, performance e portabilidade. Controles contextuais tratam jogos, mobilidade e trabalho criativo.
+
+<Decision title="A interpretação é editável">A primeira resposta do modelo é um ponto de partida. O usuário pode corrigir suas suposições antes que elas afetem a recomendação.</Decision>
+
+## Manter a seleção na aplicação
+
+O motor avalia registros existentes com heurísticas locais. Combina adequação ao orçamento e características estimadas do hardware, com ajustes para o uso pretendido. O modelo pode enriquecer a explicação depois da seleção, sem fornecer uma nova lista de produtos.
+
+Essa separação torna as regras inspecionáveis e repetíveis para os mesmos dados e critérios. Também deixa seus limites visíveis: uma nota heurística não é uma probabilidade de satisfação.
+
+## Dados reais de catálogo têm inconsistências
+
+A importação do Mercado Livre combina catálogo e ofertas, mapeia especificações e persiste registros por um repositório com suporte a PostgreSQL. Disponibilidade e preço influenciam quais produtos entram nas recomendações.
+
+Um problema concreto foi extrair RAM. Um anúncio pode confundir memória instalada com capacidade máxima ou colocar o tamanho do SSD em um atributo de memória. Testes de mapeamento cobrem esses casos combinando título e atributos.
+
+Esse trabalho importa tanto quanto o prompt. Uma explicação fluente não corrige um registro que confunde 512 GB de armazenamento com RAM.
+
+## Quando não existe uma correspondência exata
+
+O motor atual flexibiliza alguns critérios quando encontra menos de três candidatos estritos. Isso pode incluir alternativas acima do orçamento; o sistema operacional e especificações ausentes também recebem tratamento aproximado.
+
+<Limitation title="Adequação estimada">Percentuais de compatibilidade são notas heurísticas. Restrições flexibilizadas e especificações estimadas precisam ficar explícitas, sem sugerir garantia de atendimento a todos os requisitos.</Limitation>
+
+O script de recomendação imprime cenários para inspeção. Os testes de mapeamento contêm asserções; uma avaliação mais forte do ranking ainda é um próximo passo útil.
+
+## O que melhorar depois
+
+Preservar critérios ao ajustar uma busca, mostrar falhas de requisição na interface e separar correspondências exatas de alternativas. Um snapshot reproduzível do catálogo também permitiria demonstrar o fluxo sem depender de preços e disponibilidade atuais.
+
+O protótipo roda no Windows com React, Vite, TypeScript, Express, PostgreSQL e Gemini. Outras categorias, ranking orientado por feedback e monetização continuam como trabalho futuro.

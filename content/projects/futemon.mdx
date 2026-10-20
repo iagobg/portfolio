@@ -1,0 +1,69 @@
+---
+slug: "futemon"
+fileName: "futemon.mdx"
+title: "Futemon"
+shortDescription: "Build a Pokémon futsal team, generate a narrated match, and replay the story."
+year: 2026
+status: "Prototype"
+featured: true
+order: 4
+repositoryUrl: ""
+liveUrl: ""
+tags:
+  - "Go"
+  - "HTMX"
+  - "SQLite"
+  - "Structured generation"
+  - "Replay"
+techStack:
+  - "Go"
+  - "HTMX"
+  - "SQLite"
+  - "OpenRouter"
+summary:
+  problem: "Generated match events need to become a consistent experience with persistent teams, history and a shared playback clock."
+  solution: "Validate structured events on the server, derive scores from those events, and render a timed broadcast with replay."
+  role: "Application architecture, Go backend, team rules, AI integration and match playback"
+outcomes:
+  - "Structured match events are normalized and validated before presentation."
+  - "Team snapshots and transfer rules preserve a meaningful match history."
+  - "Server timeline anchors support synchronized narration and replay."
+---
+
+## A match worth watching
+
+Futemon starts with a playful question: what would a futsal match between Pokémon teams look like? Players assemble a lineup, choose an opponent, and follow a narrated match that reveals its events over time.
+
+The interesting engineering work sits between generation and presentation. A JSON response is not yet a game experience. It needs recognizable teams, valid references, a score that agrees with the events, and a timeline that can be watched again.
+
+## Turning generation into an application
+
+The Go backend builds matchup context from player attributes, positions, and type effectiveness. That context informs an OpenRouter request for structured match events. The response is parsed, normalized, and validated before it becomes a match record.
+
+<Decision title="An explicit boundary">The model generates events. The application resolves team and player references, derives the score from goal events, and controls how the match is presented. This is an experiment in generated matches, not a deterministic sports simulation.</Decision>
+
+A local sample generator supports repeatable development without an external model call. It is a sample playback path, not evidence of fresh AI generation. Provider failures can be surfaced or routed through an explicitly configured fallback.
+
+## A broadcast has its own clock
+
+Showing the final result immediately would remove the suspense. The renderer assigns time to narration, goal pauses, halftime, and clock advancement. Score reveals follow the event timeline rather than exposing the final score too early.
+
+The browser animates against server timeline anchors and periodically resynchronizes. Replay shifts those anchors to a new starting point so an existing match can be watched again. Tests cover reveal timing, stopped clocks during narration, and score updates at the end of goal events.
+
+## Rules that survive the next request
+
+SQLite stores teams and match history. Historical team snapshots keep previous results meaningful even when a lineup later changes. Weekly transfer rules limit a valid transfer to one Pokémon, and retired teams leave competitive lists while retaining their history.
+
+These decisions make persistence part of the product design. The data model has to remember what a team was when it played, not only what it looks like now.
+
+## What the prototype demonstrates
+
+The project combines server-rendered Go HTML templates and HTMX with a small browser playback layer. Account handling, generation limits, and user-supplied API key storage support the surrounding workflow.
+
+The existing tests exercise team validation, persistence, structured responses, fallback behavior, and narration timing. Their presence supports the development story; it does not establish production readiness or model quality.
+
+## Current limits and next steps
+
+<Limitation title="Prototype">The interface and broader product flow remain unfinished. Match quality depends on the model and prompt, and generated events are not a verified simulation of sporting outcomes.</Limitation>
+
+The next useful work is a clearer end-to-end demonstration and evaluation of malformed or inconsistent generated matches. Completing every planned game mode would add less portfolio value than showing this one journey clearly.
