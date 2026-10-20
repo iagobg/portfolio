@@ -42,3 +42,12 @@ Source: F:/Users/Iago/Documents/Senac/SugereAI/sugereai, Windows runtime.
 ## Baseline
 
 Portfolio lint and production build passed before changes on 2026-10-20. Underlying project tests and historical benchmarks have not been rerun. Diagrams are explanatory models, not telemetry. Do not use placeholder artwork as product evidence.
+
+
+## Fresh capture session — 2026-10-20
+
+- Live Trivia ran locally with the installed asdf Elixir toolchain. The player-view hero shows a demo quiz, one joined player and the built-in 16 synthetic participants. The synthetic run was used to populate the visual scene; no new performance claim was derived from it.
+- Futemon ran with `FUTEMON_LLM_DISABLED=1`, local authentication and a separate `/tmp/portfolio-futemon-capture.db`. Its hero shows a seeded demonstration match recap; it is not fresh AI output.
+- SugereAI ran from its Windows source using existing dependencies and catalog. A temporary copy of the entry point used port 3080 to avoid the portfolio on port 3000. The built-in programming prompt completed interpretation, editable criteria and ranked results. Captures preserve the application's heuristic score and catalog prices with explanatory captions.
+- RTS Lab's existing Windows `zig-out/bin/rts-lab.exe --smoke-combat` ran successfully (exit 0) and generated a fresh battle-action capture. This verifies that executable's capture path, not a fresh source build or the historical performance comparison. The WSL source/runtime remains unidentified.
+- Raw screenshots are used without synthetic visual alterations. Existing historical images remain available as supporting captures. Captures were visually inspected, and bilingual media/schema validation and portfolio lint passed.

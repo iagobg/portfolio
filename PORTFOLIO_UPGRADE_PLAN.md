@@ -206,3 +206,8 @@ Verification: lint, bilingual content/media/redirect checks, navigation matching
 Additional completed steps: shared bilingual homepage with featured projects immediately after the introduction and compact technical-focus content; workflow previews replacing empty card media; functioning explorer root collapse; native mobile explorer dialog with focus restoration, Escape dismissal, backdrop dismissal and scroll locking. Desktop explorer collapse and the final sticky case-study layout were checked in the browser. Lint, content checks, navigation checks and production build pass.
 
 Still pending: comprehensive mobile/tablet/zoom/reduced-motion and back/forward checks, fresh underlying-project captures where useful, and a real contact destination. RTS Lab runtime location in WSL is unconfirmed; its reused image and performance figures are explicitly historical. No underlying-project benchmarks were rerun.
+
+
+### Capture follow-up — 2026-10-20
+
+Fresh hero captures added for Live Trivia, Futemon, SugereAI and RTS Lab, with localized alt text and provenance captions. SugereAI additionally includes criteria and result screens. All four were run locally; RTS Lab used its existing Windows executable's built-in smoke capture. Underlying source files were not changed. A closer RTS gameplay capture remains optional, and historical benchmark claims remain separate from this visual verification.
