@@ -6,6 +6,8 @@ shortDescription: "Uma aplicação de sala de trivia em Phoenix LiveView para ev
 year: 2026
 status: "Publicado"
 featured: true
+order: 1
+order: 1
 repositoryUrl: "https://github.com/iagobg/live_trivia"
 liveUrl: "https://livetrivia.iagobussoletti.com.br"
 coverImage: "/projects/live-trivia/logo.png"
@@ -49,7 +51,7 @@ summary:
 outcomes:
   - "Estado autoritativo da sala fica em processos OTP enquanto LiveView renderiza o fluxo canônico do jogo."
   - "Balões de digitação de alta frequência foram movidos para Phoenix Channels com payloads compactos para evitar diffs desnecessários do LiveView."
-  - "O benchmark sintético com 16 jogadores roda em torno de 0,7% de CPU no deploy atual na VPS Oracle."
+  - "Um benchmark sintético com 16 jogadores exercita a digitação e registra tempos no navegador e no servidor."
 ---
 
 ## Visão geral
@@ -123,9 +125,9 @@ Os logs do servidor registram taxa de mensagens de digitação, bytes de payload
 
 Esse ciclo de feedback moldou duas mudanças grandes: mover o throttle da entrada para o cliente e reduzir os payloads de digitação. Identificadores de jogador e sala viraram valores compactos baseados em slots, e o caminho mais recente de channel suporta payloads binários para atualizações de digitação.
 
-Depois de mover o deploy para uma VPS da Oracle, o teste sintético com 16 jogadores deixou de ser limitado por CPU. A mesma sala simulada agora fica em torno de 0,7% de uso de CPU, transformando o benchmark de sinal de alerta em guarda de regressão para mudanças futuras de UI e transporte.
+A sala sintética torna mudanças de transporte observáveis por medições repetíveis. Os resultados dependem do host, build, carga e janela de amostragem; essa carga não representa uma garantia de capacidade em produção.
 
-<Decision title="Medir antes de trocar o modelo">O gargalo foi resolvido por ajuste de transporte e encaixe de deploy, sem abandonar a arquitetura autoritativa em LiveView que mantém o jogo justo.</Decision>
+<Decision title="Medir antes de trocar o modelo">Ajustes de transporte podem ser avaliados separadamente da correção das regras, preservando a arquitetura autoritativa no servidor.</Decision>
 
 ## Design mobile
 
@@ -156,6 +158,6 @@ Live Trivia atualmente suporta criação de sala, senhas opcionais, seleção de
 
 LiveView é excelente para fazer estado compartilhado parecer simples, mas nem toda mensagem de websocket deve virar estado do LiveView. A versão mais forte desta aplicação veio de separar autoridade de ambientação: o servidor decide o jogo, enquanto channels carregam o movimento leve que faz a sala parecer viva.
 
-O projeto também tornou performance visível em vez de teórica. Depois que a sala sintética existiu, a otimização ganhou um alvo: menos bytes, menos renderização desnecessária, números de latência mais claros e uma forma repetível de confirmar que o deploy na VPS da Oracle removeu o gargalo de CPU.
+O projeto também tornou performance visível em vez de teórica. Depois que a sala sintética existiu, a otimização ganhou um alvo: menos bytes, menos renderização desnecessária, números de latência mais claros e uma forma repetível de comparar mudanças de transporte.
 
 O formato final é intencionalmente modesto em armazenamento e escopo, mas ambicioso onde o usuário sente: um host consegue conduzir uma sala, jogadores entram pelo celular, e o jogo inteiro tem a imediaticidade de pessoas digitando e reagindo juntas no mesmo lugar.

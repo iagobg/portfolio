@@ -6,6 +6,8 @@ shortDescription: "A Phoenix LiveView trivia room app for live events, with serv
 year: 2026
 status: "Deployed"
 featured: true
+order: 1
+order: 1
 repositoryUrl: "https://github.com/iagobg/live_trivia"
 liveUrl: "https://livetrivia.iagobussoletti.com.br"
 coverImage: "/projects/live-trivia/logo.png"
@@ -47,7 +49,7 @@ summary:
 outcomes:
   - "Authoritative room state stays in OTP processes while LiveView renders the canonical game flow."
   - "High-frequency typing bubbles moved to Phoenix Channels with compact payloads to avoid unnecessary LiveView diffs."
-  - "The 16-player synthetic benchmark now runs around 0.7% CPU on the Oracle VPS deployment."
+  - "A 16-player synthetic benchmark exercises typing traffic and records browser and server timing."
 ---
 
 ## Overview
@@ -121,9 +123,9 @@ Server logs record typing message rate, payload bytes, channel handler timing, B
 
 That feedback loop shaped two major changes: moving input throttling client-side and shrinking typing payloads. Player and room identifiers became compact slot-based values, and the newest channel path supports binary payloads for typing updates.
 
-After moving the deployment to an Oracle VPS, the 16-player synthetic test stopped being CPU-bound. The same simulated room now sits around 0.7% CPU usage, turning the benchmark from a warning signal into a regression guard for future UI and transport changes.
+The synthetic room makes transport changes observable through repeatable measurements. Results depend on the host, build, workload, and sampling window; this workload is not a claim of production capacity.
 
-<Decision title="Measure before changing the model">The bottleneck was resolved through transport tuning and deployment fit, without abandoning the server-authoritative LiveView architecture that keeps the game fair.</Decision>
+<Decision title="Measure before changing the model">Transport tuning can be evaluated independently from game correctness, while preserving the server-authoritative architecture.</Decision>
 
 ## Mobile design
 
@@ -154,6 +156,6 @@ Live Trivia currently supports room creation, optional passwords, color selectio
 
 LiveView is excellent at making shared state feel simple, but not every websocket message should become LiveView state. The strongest version of this app came from separating authority from ambience: the server decides the game, while channels carry the lightweight motion that makes the room feel alive.
 
-The project also made performance visible instead of theoretical. Once the synthetic room existed, optimization work had a target: fewer bytes, less unnecessary rendering, clearer latency numbers, and a repeatable way to confirm that the Oracle VPS deployment removed the CPU bottleneck.
+The project also made performance visible instead of theoretical. Once the synthetic room existed, optimization work had a target: fewer bytes, less unnecessary rendering, clearer latency numbers, and a repeatable way to compare transport changes.
 
 The final shape is intentionally modest in storage and scope, but ambitious where the user feels it: a host can run a room, players can join from phones, and the whole game has the immediacy of people typing and reacting together in the same place.
