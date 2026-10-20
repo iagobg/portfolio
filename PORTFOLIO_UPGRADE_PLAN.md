@@ -1,7 +1,7 @@
 # Portfolio upgrade plan
 
 Date: 2026-10-20
-Status: ready for review and execution; implementation has not started.
+Status: implementation in progress on `codex/portfolio-upgrade`; local commits only, no push.
 
 ## Objective
 
@@ -187,3 +187,20 @@ Deferred extras: theme picker, simulated terminal, boot animation, particle back
 6. Homepage polish, accessibility/responsive checks, and final review.
 
 Each milestone should leave the portfolio buildable and navigable. Prefer completing one representative case study through the shared presentation system before applying that system to all projects.
+
+
+## Execution checkpoint — 2026-10-20
+
+Completed and committed in separate steps:
+
+- Evidence ledger and bilingual Live Trivia review; unsupported CPU percentage removed.
+- Bilingual Futemon, RTS Lab and SugereAI development stories, accurate prototype positioning, curated ordering and redirects from old project URLs.
+- Live Trivia rewritten in first person to describe development decisions and experience.
+- Shared project page, content validation and localized section anchors.
+- Split case-study editor with a sticky preview on wide containers, stacked narrow layouts, capture selection and expanded images.
+- Interactive Live Trivia diagram for answers, typing and player presence, clearly labeled as an explanatory model.
+- Enhanced command palette with technology matching, result details, contextual section/preview actions, keyboard selection, modal focus containment and Escape dismissal.
+
+Verification: lint, bilingual content/media/redirect checks, navigation matching/anchor checks and production build pass. Browser checks covered desktop sticky previews, expanded captures, architecture interaction, Ctrl+K, technology search, architecture navigation and empty search results.
+
+Still pending: homepage hierarchy polish, comprehensive mobile/tablet/zoom/reduced-motion and back/forward checks, fresh underlying-project captures where useful, and a real contact destination. RTS Lab runtime location in WSL is unconfirmed; its reused image and performance figures are explicitly historical. No underlying-project benchmarks were rerun.

@@ -1,11 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Columns2, BookOpen, Image as ImageIcon } from "lucide-react";
 
 export function CaseWorkspace({ children, preview, locale }) {
   const [view, setView] = useState("split");
   const pt = locale === "pt-BR";
+  useEffect(() => {
+    let frame;
+    function reveal(event) {
+      const anchor = event?.detail || window.location.hash.slice(1);
+      if (!anchor) return;
+      setView((current) => anchor === "architecture" || anchor === "project-preview" || current === "preview" ? "split" : current);
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        document.getElementById(anchor === "architecture" ? "project-preview" : anchor)?.scrollIntoView({ block: "start" });
+      });
+    }
+    reveal();
+    window.addEventListener("portfolio:reveal", reveal);
+    window.addEventListener("hashchange", reveal);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("portfolio:reveal", reveal);
+      window.removeEventListener("hashchange", reveal);
+    };
+  }, []);
   const modes = [
     ["split", Columns2, pt ? "Dividir editor" : "Split editor"],
     ["story", BookOpen, pt ? "Leitura" : "Read"],

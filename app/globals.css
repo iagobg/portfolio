@@ -171,6 +171,7 @@ input {
 .case-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; border: 1px solid #293345; background: #10151f; padding: .5rem .75rem; border-radius: .5rem .5rem 0 0; }
 .case-layout { display: grid; gap: 2rem; padding-top: 1.5rem; }
 .case-story, .case-preview { min-width: 0; }
+.case-preview, #architecture { scroll-margin-top: 7rem; }
 .case-story { max-width: 78ch; }
 .case-preview { order: -1; }
 .case-preview[hidden], .case-story[hidden] { display: none; }
@@ -184,3 +185,6 @@ input {
 }
 .media-dialog { width: min(96vw, 1500px); max-height: 94dvh; padding: 1rem; border: 1px solid #39465c; border-radius: .6rem; background: #10151f; color: #edf4ff; }
 dialog::backdrop { background: rgb(0 0 0 / .8); backdrop-filter: blur(5px); }
+
+.command-dialog { width: min(94vw, 900px); max-width: 94vw; max-height: 88dvh; margin: 8dvh auto auto; border: 0; padding: 0; background: transparent; color: #edf4ff; overflow: visible; }
+.command-panel { border: 1px solid #39465c; border-radius: .75rem; overflow: hidden; background: #10151f; box-shadow: 0 24px 80px #0009; }

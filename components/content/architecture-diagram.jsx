@@ -78,7 +78,7 @@ export function ArchitectureDiagram({ locale = "en" }) {
   const scenario = items[scenarioIndex];
 
   return (
-    <section className="p-4 sm:p-5" aria-label={pt ? "Arquitetura interativa do Live Trivia" : "Interactive Live Trivia architecture"}>
+    <section id="architecture" className="p-4 sm:p-5" aria-label={pt ? "Arquitetura interativa do Live Trivia" : "Interactive Live Trivia architecture"}>
       <div className="mb-4 flex items-center gap-2 font-mono text-xs uppercase tracking-wide text-accent-300"><Network size={17} aria-hidden="true" />{pt ? "Siga uma interação" : "Follow an interaction"}</div>
       <div className="mb-4 flex flex-wrap gap-2" role="group" aria-label={pt ? "Escolher interação" : "Choose interaction"}>
         {items.map((item, index) => (

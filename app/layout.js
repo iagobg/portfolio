@@ -1,4 +1,5 @@
 import "@/app/globals.css";
+import { projectHeadings } from "@/lib/headings.mjs";
 import { PortfolioShell } from "@/components/shell/portfolio-shell";
 import { getAllProjects } from "@/lib/projects";
 import { uniqueTags } from "@/lib/tags";
@@ -6,7 +7,7 @@ import { absoluteUrl, siteConfig } from "@/lib/metadata";
 import { LOCALES } from "@/lib/i18n";
 
 function shellProject(project) {
-  const metadata = { ...project };
+  const metadata = { ...project, headings: projectHeadings(project.content) };
   delete metadata.content;
   return metadata;
 }

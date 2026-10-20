@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Expand, X, ArrowDown } from "lucide-react";
 import dynamic from "next/dynamic";
 
@@ -11,6 +11,19 @@ export function ProjectPreview({ project, locale }) {
   const pt = locale === "pt-BR";
   const [selected, setSelected] = useState(0);
   const [mode, setMode] = useState("captures");
+  useEffect(() => {
+    function reveal(event) {
+      const anchor = event?.detail || window.location.hash.slice(1);
+      if (anchor === "architecture") setMode("architecture");
+    }
+    reveal();
+    window.addEventListener("portfolio:reveal", reveal);
+    window.addEventListener("hashchange", reveal);
+    return () => {
+      window.removeEventListener("portfolio:reveal", reveal);
+      window.removeEventListener("hashchange", reveal);
+    };
+  }, []);
   const dialog = useRef(null);
   const screenshots = project.screenshots || [];
   const current = screenshots[selected];

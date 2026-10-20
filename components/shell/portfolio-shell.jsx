@@ -45,7 +45,7 @@ export function PortfolioShell({ projectsByLocale, children }) {
     function onKeyDown(event) {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
-        setPaletteOpen(true);
+        setPaletteOpen((value) => !value);
       }
     }
 
