@@ -10,6 +10,7 @@ import { ActivityBar } from "@/components/shell/activity-bar";
 import { Breadcrumbs } from "@/components/shell/breadcrumbs";
 import { EditorTabs } from "@/components/shell/editor-tabs";
 import { Explorer } from "@/components/shell/explorer";
+import { MobileExplorer } from "@/components/shell/mobile-explorer";
 import { StatusBar } from "@/components/shell/status-bar";
 import { TitleBar } from "@/components/shell/title-bar";
 
@@ -78,7 +79,9 @@ export function PortfolioShell({ projectsByLocale, children }) {
 
   useEffect(() => {
     if (!tabsReady) return;
-    window.localStorage.setItem("portfolio:open-project-tabs", JSON.stringify(openProjectSlugs));
+    try {
+      window.localStorage.setItem("portfolio:open-project-tabs", JSON.stringify(openProjectSlugs));
+    } catch { /* Tabs remain usable when browser storage is unavailable. */ }
   }, [openProjectSlugs, tabsReady]);
 
   function closeProjectTab(slug) {
@@ -126,16 +129,7 @@ export function PortfolioShell({ projectsByLocale, children }) {
       </div>
       <StatusBar items={info.status} githubUsername="iagobg" />
       {mobileExplorerOpen ? (
-        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Explorer">
-          <button
-            className="absolute inset-0 bg-black/60"
-            aria-label="Close explorer"
-            onClick={() => setMobileExplorerOpen(false)}
-          />
-          <div className="relative h-full w-[min(22rem,88vw)] border-r border-workbench-700 bg-workbench-850">
-            <Explorer projects={projects} pathname={pathname} onNavigate={() => setMobileExplorerOpen(false)} locale={locale} t={t} />
-          </div>
-        </div>
+        <MobileExplorer projects={projects} pathname={pathname} locale={locale} t={t} onClose={() => setMobileExplorerOpen(false)} />
       ) : null}
       {paletteOpen ? (
         <CommandPalette

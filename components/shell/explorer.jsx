@@ -48,6 +48,7 @@ function FolderGroup({ label, children, defaultOpen = true }) {
 
 export function Explorer({ projects, pathname, onNavigate, locale, t }) {
   const strippedPath = stripLocale(pathname);
+  const [rootOpen, setRootOpen] = useState(true);
 
   return (
     <aside className="flex h-full flex-col" aria-label="Explorer">
@@ -58,12 +59,13 @@ export function Explorer({ projects, pathname, onNavigate, locale, t }) {
         <button
           type="button"
           className="mb-2 flex min-h-8 w-full items-center gap-1 rounded px-1 py-1 text-left font-mono text-sm font-bold text-ink-100"
-          aria-expanded="true"
+          aria-expanded={rootOpen}
+          onClick={() => setRootOpen((open) => !open)}
         >
-          <ChevronDown size={15} aria-hidden="true" />
+          <ChevronDown size={15} className={rootOpen ? "" : "-rotate-90"} aria-hidden="true" />
           IAGO-BUSSOLETTI
         </button>
-        <div className="grid gap-1 pl-4">
+        <div className="grid gap-1 pl-4" hidden={!rootOpen}>
           <ExplorerLink href={localizePath("/", locale)} active={strippedPath === "/"} onNavigate={onNavigate}>
             <FileText size={15} className="text-accent-300" aria-hidden="true" />
             README.md
