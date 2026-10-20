@@ -13,17 +13,23 @@ export function ProjectCard({ project, locale = "en", t }) {
 
   return (
     <article className="group grid overflow-hidden rounded border border-workbench-700 bg-workbench-850 transition hover:border-accent-500/70 md:grid-cols-[220px_1fr]">
-      <Link href={href} className="relative block min-h-44 overflow-hidden bg-workbench-900">
+      <Link href={href} aria-label={`${t.openCaseStudy}: ${project.title}`} className="relative block min-h-44 overflow-hidden bg-workbench-900">
         {project.coverImage ? (
           <Image
             src={project.coverImage}
             alt=""
             width={1200}
             height={720}
+            sizes="(min-width: 768px) 220px, 90vw"
             className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.025]"
           />
         ) : (
-          <div className="h-full w-full bg-workbench-900" />
+          <div className="flex h-full min-h-44 flex-col justify-center gap-3 p-5">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-accent-300">{locale === "pt-BR" ? "Fluxo do projeto" : "Project workflow"}</span>
+            {project.flow?.length ? <ol className="grid gap-3">
+              {project.flow.slice(0, 3).map((step, index) => <li key={step} className="flex items-start gap-2 text-xs leading-5 text-ink-200"><span className="font-mono text-accent-300">{String(index + 1).padStart(2, "0")}</span><span>{step}</span></li>)}
+            </ol> : <span className="font-mono text-sm text-ink-200">{project.title}</span>}
+          </div>
         )}
         <span className="absolute left-0 top-0 h-full w-1 bg-accent-500 opacity-0 transition group-hover:opacity-100" />
       </Link>
