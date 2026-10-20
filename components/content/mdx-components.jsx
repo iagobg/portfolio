@@ -1,9 +1,4 @@
-function idFromChildren(children) {
-  return String(children)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+import { headingId } from "@/lib/headings.mjs";
 
 export function Callout({ title = "Note", children }) {
   return (
@@ -33,8 +28,8 @@ export function Limitation({ title = "Limitation", children }) {
 }
 
 export const mdxComponents = {
-  h2: ({ children }) => <h2 id={idFromChildren(children)}>{children}</h2>,
-  h3: ({ children }) => <h3 id={idFromChildren(children)}>{children}</h3>,
+  h2: ({ children }) => <h2 id={headingId(children)}>{children}</h2>,
+  h3: ({ children }) => <h3 id={headingId(children)}>{children}</h3>,
   Callout,
   Decision,
   Limitation

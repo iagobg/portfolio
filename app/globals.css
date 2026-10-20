@@ -165,3 +165,22 @@ input {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Editor content responds to available space, including a collapsed explorer. */
+.project-page { container: case / inline-size; padding-bottom: 4rem; }
+.case-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; border: 1px solid #293345; background: #10151f; padding: .5rem .75rem; border-radius: .5rem .5rem 0 0; }
+.case-layout { display: grid; gap: 2rem; padding-top: 1.5rem; }
+.case-story, .case-preview { min-width: 0; }
+.case-story { max-width: 78ch; }
+.case-preview { order: -1; }
+.case-preview[hidden], .case-story[hidden] { display: none; }
+.preview-surface { overflow: hidden; border: 1px solid #293345; border-radius: .5rem; background: #10151f; }
+.case-layout--preview .case-preview { max-width: 1000px; width: 100%; margin: auto; }
+.case-layout--story .case-story { margin: auto; }
+@container case (min-width: 760px) {
+  .case-toolbar { position: sticky; top: 2.5rem; z-index: 20; box-shadow: 0 8px 16px rgb(9 13 19 / .3); }
+  .case-layout--split { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 2rem; }
+  .case-layout--split .case-preview { order: 0; align-self: start; position: sticky; top: 7rem; max-height: calc(100dvh - 9rem); overflow-y: auto; scrollbar-width: thin; }
+}
+.media-dialog { width: min(96vw, 1500px); max-height: 94dvh; padding: 1rem; border: 1px solid #39465c; border-radius: .6rem; background: #10151f; color: #edf4ff; }
+dialog::backdrop { background: rgb(0 0 0 / .8); backdrop-filter: blur(5px); }

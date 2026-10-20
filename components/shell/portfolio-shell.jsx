@@ -106,7 +106,7 @@ export function PortfolioShell({ projectsByLocale, children }) {
       />
       <div className="flex min-h-[calc(100vh-2.5rem-1.625rem)] pt-10 lg:pl-12">
         <ActivityBar activeSection={info.section} onCommand={() => setPaletteOpen(true)} locale={locale} t={t} />
-        <div className={`${explorerOpen ? "lg:block" : "lg:hidden"} hidden w-72 shrink-0 border-r border-workbench-700 bg-workbench-850 lg:block`}>
+        <div className={`${explorerOpen ? "lg:block" : "lg:hidden"} hidden w-72 shrink-0 border-r border-workbench-700 bg-workbench-850`}>
           <Explorer projects={projects} pathname={pathname} onNavigate={() => setMobileExplorerOpen(false)} locale={locale} t={t} />
         </div>
         <main className="min-w-0 flex-1 bg-workbench-925">
@@ -119,7 +119,7 @@ export function PortfolioShell({ projectsByLocale, children }) {
             onCloseProject={closeProjectTab}
           />
           <Breadcrumbs items={info.breadcrumbs} />
-          <div className="editor-scrollbar min-h-[calc(100vh-2.5rem-1.625rem-5.25rem)] overflow-x-hidden overflow-y-auto">
+          <div className="min-h-[calc(100vh-2.5rem-1.625rem-5.25rem)]">
             {children}
           </div>
         </main>
