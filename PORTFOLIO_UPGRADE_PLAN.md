@@ -203,4 +203,6 @@ Completed and committed in separate steps:
 
 Verification: lint, bilingual content/media/redirect checks, navigation matching/anchor checks and production build pass. Browser checks covered desktop sticky previews, expanded captures, architecture interaction, Ctrl+K, technology search, architecture navigation and empty search results.
 
-Still pending: homepage hierarchy polish, comprehensive mobile/tablet/zoom/reduced-motion and back/forward checks, fresh underlying-project captures where useful, and a real contact destination. RTS Lab runtime location in WSL is unconfirmed; its reused image and performance figures are explicitly historical. No underlying-project benchmarks were rerun.
+Additional completed steps: shared bilingual homepage with featured projects immediately after the introduction and compact technical-focus content; workflow previews replacing empty card media; functioning explorer root collapse; native mobile explorer dialog with focus restoration, Escape dismissal, backdrop dismissal and scroll locking. Desktop explorer collapse and the final sticky case-study layout were checked in the browser. Lint, content checks, navigation checks and production build pass.
+
+Still pending: comprehensive mobile/tablet/zoom/reduced-motion and back/forward checks, fresh underlying-project captures where useful, and a real contact destination. RTS Lab runtime location in WSL is unconfirmed; its reused image and performance figures are explicitly historical. No underlying-project benchmarks were rerun.
